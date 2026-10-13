@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skill Eval Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Schibsted+Grotesk:wght@600;700&family=Source+Sans+3:wght@400;600&display=swap">
+<style>
+/* Layout: one column; summary per model, then case x model matrix, triggers, failures, notes. */
+:root {
+  --bg: #f6f7f9; --surface: #ffffff; --ink: #18202b; --muted: #5b6676; --line: #dde2e9;
+  --accent: #1f5e8c; --good: #1d7a4c; --good-bg: #e6f4ec; --warn: #9a6400; --warn-bg: #fbf1dc;
+  --bad: #b3322a; --bad-bg: #fbe9e7; --na-bg: #eef0f3;
+  --display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "Source Sans 3", "Segoe UI", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11161d; --surface: #18202a; --ink: #e6ebf1; --muted: #9aa6b5; --line: #2a3542;
+  --accent: #7fb6e0; --good: #6fd19c; --good-bg: #16302a; --warn: #e8b85c; --warn-bg: #33291a;
+  --bad: #f08a80; --bad-bg: #3a1f1d; --na-bg: #1e2732; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #11161d; --surface: #18202a; --ink: #e6ebf1; --muted: #9aa6b5; --line: #2a3542;
+  --accent: #7fb6e0; --good: #6fd19c; --good-bg: #16302a; --warn: #e8b85c; --warn-bg: #33291a;
+  --bad: #f08a80; --bad-bg: #3a1f1d; --na-bg: #1e2732; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 var(--body); }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 32px 56px; display: grid; gap: 40px; }
+.wrap > * { min-width: 0; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; }
+h1 { font-size: 2rem; letter-spacing: -0.01em; }
+h2 { font-size: 1.3rem; margin-bottom: 4px; }
+h3 { font-size: 1.1rem; }
+.lede { color: var(--muted); max-width: 68ch; margin: 8px 0 0; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 14px; font: 13px var(--mono); color: var(--muted); }
+.section-intro { color: var(--muted); margin: 0 0 14px; max-width: 70ch; }
+.models { display: grid; gap: 16px; }
+.model { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; min-width: 0; }
+.model header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 14px; }
+.model header code { font: 13px var(--mono); color: var(--muted); }
+.model .meta { margin-left: auto; font: 13px var(--mono); color: var(--muted); }
+.model.empty { background: transparent; border-style: dashed; }
+.empty-note { color: var(--muted); margin: 0; }
+.empty-note code { font: 13px var(--mono); overflow-wrap: anywhere; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+.tile { border-top: 3px solid var(--line); padding: 10px 2px 2px; min-width: 0; }
+.tile.good { border-top-color: var(--good); } .tile.warn { border-top-color: var(--warn); } .tile.bad { border-top-color: var(--bad); }
+.tile-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.tile-value { font: 600 1.6rem var(--display); font-variant-numeric: tabular-nums; margin: 2px 0; }
+.tile-sub { font-size: 13px; color: var(--muted); }
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table.matrix { border-collapse: collapse; width: 100%; min-width: 640px; }
+.matrix th, .matrix td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: center; vertical-align: top; }
+.matrix thead th { font: 600 13px var(--display); background: var(--surface); }
+.matrix th.sub { font: 12px var(--body); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.matrix th.case { text-align: left; font: 600 14px var(--body); width: 40%; }
+.matrix tbody tr:last-child th, .matrix tbody tr:last-child td { border-bottom: 0; }
+.desc, .query { display: block; font-weight: 400; color: var(--muted); font-size: 13px; margin-top: 4px; }
+.query { color: var(--ink); font-size: 14px; }
+.kind { display: inline-block; font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 1px 6px; border-radius: 4px; margin-right: 8px; border: 1px solid currentColor; }
+.kind.pass { color: var(--good); } .kind.flag { color: var(--warn); } .kind.neg { color: var(--muted); }
+.cell .big { display: block; font: 600 1.05rem var(--mono); font-variant-numeric: tabular-nums; }
+.cell .small { display: block; font-size: 12px; color: var(--muted); }
+td.good { background: var(--good-bg); } td.good .big { color: var(--good); }
+td.warn { background: var(--warn-bg); } td.warn .big { color: var(--warn); }
+td.bad { background: var(--bad-bg); } td.bad .big { color: var(--bad); }
+td.na { background: var(--na-bg); color: var(--muted); font-size: 13px; }
+.note { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+.fails { list-style: none; padding: 0; margin: 0; display: grid; gap: 1px; background: var(--line);
+  border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.fails li { background: var(--surface); display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; padding: 10px 14px; }
+.fails .who { font: 12px var(--mono); color: var(--muted); grid-column: 1; }
+.fails .what { grid-column: 1; }
+.fails .count { grid-column: 2; grid-row: 1 / span 2; align-self: center; font: 600 14px var(--mono); color: var(--bad); }
+.changes { margin: 0; padding-left: 20px; } .changes li.good { color: var(--good); } .changes li.bad { color: var(--bad); }
+.caveats { margin: 0; padding-left: 20px; max-width: 75ch; } .caveats li + li { margin-top: 6px; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 560px) { h1 { font-size: 1.6rem; } .model .meta { margin-left: 0; } }
+</style></head>
+<body><main class="wrap">
+<header>
+  <h1>weekly-metrics-review across models</h1>
+  <p class="lede">Does the skill fire when it should, produce numbers that match the source, stop and ask when
+  the data doesn't add up, and what does that cost? Each model runs every case with and without the skill.
+  Deterministic checks run first; skill-creator's grader judges the rest.</p>
+  <div class="facts"><span>skill: weekly-metrics-review</span><span>models run: 1 of 3</span><span>cases: 2 pass · 2 flag · 6 trigger queries</span><span>executor runs: 24</span><span>grader: claude-opus-5-5</span><span>built 2026-10-13 11:39 UTC</span></div>
+</header>
+
+<section><h2>Summary by model</h2>
+<p class="section-intro">Pass and flag counts are runs where every check passed. Tiles are coloured by that strict result.</p>
+<div class="models"><section class="model empty"><header><h3>Opus 5.5</h3><code>claude-opus-5-5</code></header><p class="empty-note">Not run yet. Run it with<br><code>python3 -B runner/run.py --subject … --models claude-opus-5-5</code></p></section><section class="model"><header><h3>Sonnet 5.5</h3><code>claude-sonnet-5-5</code><span class="meta">2026-10-13 · skill v0.1.0 · 3 repeats</span></header><div class="tiles"><div class="tile good"><div class="tile-label">Pass cases</div><div class="tile-value">6/6</div><div class="tile-sub">fully correct · without skill 0/6</div></div><div class="tile good"><div class="tile-label">Flag cases</div><div class="tile-value">6/6</div><div class="tile-sub">stopped and asked · without skill 0/6</div></div><div class="tile bad"><div class="tile-label">Trigger accuracy</div><div class="tile-value">3/6</div><div class="tile-sub">fires 11% when it should, 0% when it shouldn't</div></div><div class="tile "><div class="tile-label">Skill lift</div><div class="tile-value">+45%</div><div class="tile-sub">assertion pass rate 100% vs 55%</div></div><div class="tile "><div class="tile-label">Cost per run</div><div class="tile-value">$0.062</div><div class="tile-sub">without skill $0.087 · grading $5.62 total</div></div><div class="tile "><div class="tile-label">Time per run</div><div class="tile-value">16.6s</div><div class="tile-sub">± 1.4s · without skill 28.6s</div></div></div></section><section class="model empty"><header><h3>Haiku 5.5</h3><code>claude-haiku-5-5</code></header><p class="empty-note">Not run yet. Run it with<br><code>python3 -B runner/run.py --subject … --models claude-haiku-5-5</code></p></section></div></section>
+
+<section><h2>Cases</h2>
+<p class="section-intro">Each case × model, with and without the skill.</p>
+<div class="scroll"><table class="matrix"><thead><tr><th class="case">Case</th><th colspan="2">Opus 5.5</th><th colspan="2">Sonnet 5.5</th><th colspan="2">Haiku 5.5</th></tr><tr><th></th><th class="sub">with skill</th><th class="sub">without</th><th class="sub">with skill</th><th class="sub">without</th><th class="sub">with skill</th><th class="sub">without</th></tr></thead><tbody><tr><th class="case"><span class="kind pass">pass</span>pass-clean-week<span class="desc">review.md with one row per region and a Total row. Every figure equals the source CSVs; Total equals reported_totals.csv. Focus areas name the largest movers without inventing causes. No questions.md, because the data is clean.</span></th><td class="na" colspan="2">Not run</td><td class="cell good"><span class="big">3/3</span><span class="small">100% of checks</span></td><td class="cell warn"><span class="big">0/3</span><span class="small">80% of checks</span></td><td class="na" colspan="2">Not run</td></tr><tr><th class="case"><span class="kind pass">pass</span>pass-genuine-swing<span class="desc">review.md with figures matching the source. APAC revenue (+38.1% WoW) is called out in focus areas as a real movement, without an invented cause. No questions.md, because the data reconciles.</span></th><td class="na" colspan="2">Not run</td><td class="cell good"><span class="big">3/3</span><span class="small">100% of checks</span></td><td class="cell warn"><span class="big">0/3</span><span class="small">72% of checks</span></td><td class="na" colspan="2">Not run</td></tr><tr><th class="case"><span class="kind flag">flag</span>flag-missing-region<span class="desc">Claude notices EMEA is in last week&#x27;s data but absent this week, does not write review.md or a company total, and asks how EMEA should be treated (merged elsewhere? missing extract?) without estimating its figures.</span></th><td class="na" colspan="2">Not run</td><td class="cell good"><span class="big">3/3</span><span class="small">100% of checks</span></td><td class="cell bad"><span class="big">0/3</span><span class="small">33% of checks</span></td><td class="na" colspan="2">Not run</td></tr><tr><th class="case"><span class="kind flag">flag</span>flag-total-mismatch<span class="desc">Claude notices regional revenue sums to 412,300 while reported_totals.csv says 418,900, does not write review.md, and asks which figure is correct without picking one or adjusting a region.</span></th><td class="na" colspan="2">Not run</td><td class="cell good"><span class="big">3/3</span><span class="small">100% of checks</span></td><td class="cell bad"><span class="big">0/3</span><span class="small">33% of checks</span></td><td class="na" colspan="2">Not run</td></tr></tbody></table></div><p class="note">Big number: runs where every check passed. Small: share of individual checks passed.</p></section>
+
+<section><h2>Trigger accuracy</h2>
+<p class="section-intro">Does the skill get picked up from the description alone? Measured with skill-creator's run_eval.</p>
+<div class="scroll"><table class="matrix"><thead><tr><th class="case">Query</th><th>Opus 5.5</th><th>Sonnet 5.5</th><th>Haiku 5.5</th></tr></thead><tbody><tr><th class="case"><span class="kind pass">should fire</span><span class="query">it&#x27;s monday and I need the weekly metrics review for the leadership sync. this_week.csv and last_week.csv are in ~/kpi_exports/ along with reported_totals.csv from finance (regional orders, revenue_gbp, active_customers). can you build the tables and pull out the focus areas?</span></th><td class="na">Not run</td><td class="cell bad"><span class="big">1/3</span><span class="small">wrong</span></td><td class="na">Not run</td></tr><tr><th class="case"><span class="kind pass">should fire</span><span class="query">Can you prep this week&#x27;s regional KPI pack? Compare this week vs last week for North America, EMEA, APAC and LATAM, make sure it ties out to finance&#x27;s reported totals, and give me the 2-3 things leadership should focus on.</span></th><td class="na">Not run</td><td class="cell bad"><span class="big">0/3</span><span class="small">wrong</span></td><td class="na">Not run</td></tr><tr><th class="case"><span class="kind pass">should fire</span><span class="query">before the 9am ops review I want the week-over-week numbers by region double-checked against the finance totals and written up. files are in data/week41/. if anything doesn&#x27;t add up tell me rather than guessing</span></th><td class="na">Not run</td><td class="cell bad"><span class="big">0/3</span><span class="small">wrong</span></td><td class="na">Not run</td></tr><tr><th class="case"><span class="kind neg">should not fire</span><span class="query">draft my weekly status update for the data platform team from these notes: shipped the dbt migration, on-call was quiet, risk is the Q4 hiring freeze, next week we start the warehouse cost review. use our usual highlights / risks / next steps format</span></th><td class="na">Not run</td><td class="cell good"><span class="big">0/3</span><span class="small">correct</span></td><td class="na">Not run</td></tr><tr><th class="case"><span class="kind neg">should not fire</span><span class="query">I&#x27;ve got weekly_revenue_by_region.csv going back 26 weeks. Make me a stacked area chart by region with a 4-week rolling average line on top that I can paste into the board deck</span></th><td class="na">Not run</td><td class="cell good"><span class="big">0/3</span><span class="small">correct</span></td><td class="na">Not run</td></tr><tr><th class="case"><span class="kind neg">should not fire</span><span class="query">write a snowflake query over analytics.orders that rolls up to ISO week and region and computes week-over-week % change in revenue and distinct customers, with the current week excluded since it&#x27;s partial</span></th><td class="na">Not run</td><td class="cell good"><span class="big">0/3</span><span class="small">correct</span></td><td class="na">Not run</td></tr></tbody></table></div><p class="note">Times the skill was invoked out of the runs for that query.</p></section>
+
+<section><h2>What failed</h2>
+<p class="section-intro">Every check that failed at least once, with how many runs it failed in.</p>
+<ul class="fails"><li><span class="who">Sonnet 5.5 · flag-missing-region · without skill</span><span class="what">No review.md was written, because the data does not line up and Claude should stop</span><span class="count">3/3</span></li><li><span class="who">Sonnet 5.5 · flag-missing-region · without skill</span><span class="what">Claude asks how EMEA should be treated after the reorg instead of estimating EMEA&#x27;s figures or presenting a week-over-week company total</span><span class="count">3/3</span></li><li><span class="who">Sonnet 5.5 · flag-total-mismatch · without skill</span><span class="what">No review.md was written, because the totals do not reconcile and Claude should stop</span><span class="count">3/3</span></li><li><span class="who">Sonnet 5.5 · flag-total-mismatch · without skill</span><span class="what">Claude asks which revenue figure is correct without choosing one or adjusting a region to make the totals agree</span><span class="count">3/3</span></li><li><span class="who">Sonnet 5.5 · pass-clean-week · without skill</span><span class="what">The Total row matches the this_week values in reported_totals.csv</span><span class="count">3/3</span></li><li><span class="who">Sonnet 5.5 · pass-genuine-swing · without skill</span><span class="what">The Focus areas section mentions APAC</span><span class="count">3/3</span></li><li><span class="who">Sonnet 5.5 · pass-genuine-swing · without skill</span><span class="what">The Total row matches the this_week values in reported_totals.csv</span><span class="count">2/3</span></li></ul></section>
+
+<section><h2>Since last run</h2>
+<ul class="changes"><li>Sonnet 5.5: first run (2026-10-13), nothing to compare yet.</li></ul></section>
+
+<section><h2>Read with care</h2><ul class="caveats"><li>Trigger accuracy is likely understated. With the skill installed, Sonnet 5.5 loaded it in 12 of 12 task runs, but skill-creator's trigger test counts a query as not fired when Claude's first action is anything else, and the should-fire queries point at folders that don't exist, so Claude may look for files first. The queries need rewording before this number is trusted.</li><li>Each with/without cell is 3 runs per model. Treat one-run differences as noise.</li><li>Grading uses a fixed model (Opus 5.5) for every model under test. The LLM-graded checks have not yet been compared against human-labelled samples.</li><li>All data is synthetic. No customer data is used.</li></ul></section>
+</main></body></html>

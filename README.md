@@ -79,6 +79,17 @@ python3 -B vendor/skill-creator/eval-viewer/generate_review.py $R \
   --skill-name weekly-metrics-review --benchmark $R/benchmark.json --static $R/review.html
 ```
 
+## 4. Build the comparison page
+
+```bash
+python3 -B reports/build_report.py --subject subjects/weekly-metrics-review
+```
+
+This writes `reports/index.html` from the latest `runs/*/benchmark.json` for each model
+(Opus 5.5, Sonnet 5.5 and Haiku 5.5 by default; change them with `--models`). A model with no
+run yet shows as "Not run yet". The notes under "Read with care" come from
+`subjects/<skill>/report_caveats.json`. No model calls.
+
 ## How grading works
 
 1. **Deterministic checks first** (`runner/checks.py`). The code checks: figures in the

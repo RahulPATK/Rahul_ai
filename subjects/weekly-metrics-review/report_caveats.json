@@ -1,0 +1,6 @@
+[
+  "Trigger accuracy is likely understated. With the skill installed, Sonnet 5.5 loaded it in 12 of 12 task runs, but skill-creator's trigger test counts a query as not fired when Claude's first action is anything else, and the should-fire queries point at folders that don't exist, so Claude may look for files first. The queries need rewording before this number is trusted.",
+  "Each with/without cell is 3 runs per model. Treat one-run differences as noise.",
+  "Grading uses a fixed model (Opus 5.5) for every model under test. The LLM-graded checks have not yet been compared against human-labelled samples.",
+  "All data is synthetic. No customer data is used."
+]
