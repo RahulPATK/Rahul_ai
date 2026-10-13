@@ -1,0 +1,16 @@
+{
+  "tool_calls": {
+    "Bash": 5,
+    "Write": 2
+  },
+  "total_tool_calls": 7,
+  "total_steps": 8,
+  "files_created": [
+    "review.md"
+  ],
+  "errors_encountered": 0,
+  "output_chars": 2771,
+  "transcript_chars": 11590,
+  "skills_invoked": [],
+  "skill_used": false
+}

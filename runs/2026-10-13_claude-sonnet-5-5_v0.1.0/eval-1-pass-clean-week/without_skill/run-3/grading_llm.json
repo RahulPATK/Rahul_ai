@@ -1,0 +1,82 @@
+{
+  "expectations": [
+    {
+      "text": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+      "passed": true,
+      "evidence": "The 'Key points' section of review.md cites figures and I recomputed each one from the CSVs. NA revenue +£4.8k and orders +145, 4800/6400 = 75% of net gain. EMEA orders -90, revenue -£3.1k, active customers -80, AOV £42.71 to £42.92, 149800/468700 ≈ 32% share. APAC revenue +3.7%, LATAM +4.0%, LATAM 36100/468700 ≈ 7.7%, given as 'about 8%'. NA AOV £44.28 to £43.90, LATAM AOV £36.15 to £35.74, APAC AOV 41.26 to 41.08, given as 'fell slightly'. No causes from outside the data are stated as fact. 'The drop is in volume rather than basket size' is a decomposition taken from the data itself, not a cause from outside it. Causal questions are left open: 'Worth asking the regional lead what drove it', 'can't say whether the EMEA dip is a trend or noise', and 'Check whether the small AOV decline in North America reflects a mix or promotion change' is framed as a question, not a claim. final_response.md stays within the same limits."
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "total": 1,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Bash": 4,
+      "Write": 2
+    },
+    "total_tool_calls": 6,
+    "total_steps": 7,
+    "errors_encountered": 0,
+    "output_chars": 2979,
+    "transcript_chars": 10706
+  },
+  "claims": [
+    {
+      "claim": "Regional exports sum exactly to finance's reported totals for both weeks",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Orders: 10890 last week and 11085 this week. Revenue: 462300 and 468700. Active customers: 39580 and 39995. All match reported_totals.csv."
+    },
+    {
+      "claim": "North America accounts for about 75% of the net revenue gain",
+      "type": "factual",
+      "verified": true,
+      "evidence": "4,800 / 6,400 = 75%"
+    },
+    {
+      "claim": "Overall AOV went from £42.45 to £42.28 (-0.4%)",
+      "type": "factual",
+      "verified": true,
+      "evidence": "462300/10890 = 42.45 and 468700/11085 = 42.28"
+    },
+    {
+      "claim": "EMEA was the only region to decline, on every metric",
+      "type": "factual",
+      "verified": true,
+      "evidence": "EMEA is down on orders, revenue and active customers. Every other region is up on all three."
+    },
+    {
+      "claim": "Regional tables match this_week.csv",
+      "type": "factual",
+      "verified": true,
+      "evidence": "All values in the three per-metric regional tables match this_week.csv and last_week.csv by hand. The deterministic check reported a failure, which looks like a parser issue (see eval_feedback)."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": [
+      "The executor hit Bash heredoc blocks ('expansion obfuscation') and switched to writing a script in the scratchpad"
+    ]
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+        "reason": "The deterministic check failed, but the review's regional figures are correct. The review uses one table per metric (rows are regions, columns are Last week/This week), not one wide table with orders and revenue_gbp columns. The checker seems to expect only the wide layout, so it gives a false negative. Make it accept any table layout, or match region and value pairs anywhere in the tables."
+      },
+      {
+        "assertion": "The Total row matches the this_week values in reported_totals.csv",
+        "reason": "The totals appear in the 'Headline' table as metric rows, and they match reported_totals. There is just no row labelled 'Total'. If the requirement is the totals' correctness and not the label, the check is too strict about format."
+      },
+      {
+        "assertion": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+        "reason": "'Focus areas' is not a heading in this output. I took it to mean 'Key points' and 'Suggested discussion'. Naming the section, or saying 'commentary/bullets', would make grading more consistent. Speculative causes framed as questions (e.g. 'mix or promotion change?') are a borderline case, and the assertion should say whether they are allowed."
+      }
+    ],
+    "overall": "The LLM assertion was met cleanly. The bigger issue is that two deterministic checks appear to give false negatives because of table formatting, which makes this run look worse than it is."
+  }
+}

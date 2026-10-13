@@ -53,6 +53,7 @@ Useful flags:
 | `--trigger-runs` | 3 | Runs per trigger query. |
 | `--skip-triggers` | off | Skip the trigger-accuracy test. |
 | `--workers` | 3 | Parallel executor runs. |
+| `--regrade <run folder>` | | Re-run deterministic checks on an existing run and rebuild benchmark.json. No model calls; keeps the LLM grader's verdicts. |
 
 ## 3. Look at the results
 

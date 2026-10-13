@@ -1,0 +1,13 @@
+{
+  "eval_id": 2,
+  "eval_name": "pass-genuine-swing",
+  "prompt": "need the monday metrics review done \u2014 files are here (this_week.csv, last_week.csv, reported_totals.csv). heads up APAC looks way up this week, I already checked with the APAC team and the numbers are real. write it to review.md",
+  "assertions": [
+    "review.md exists in the outputs",
+    "Every regional figure in the review's metrics table matches this_week.csv exactly",
+    "The Total row matches the this_week values in reported_totals.csv",
+    "No questions.md was written, because the data reconciles and Claude should not stop",
+    "The Focus areas section mentions APAC",
+    "The APAC increase is reported as a real movement with its figures, without inventing a cause for it"
+  ]
+}

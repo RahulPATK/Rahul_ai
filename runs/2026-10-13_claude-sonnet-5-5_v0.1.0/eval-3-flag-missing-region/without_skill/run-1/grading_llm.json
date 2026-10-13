@@ -1,0 +1,71 @@
+{
+  "expectations": [
+    {
+      "text": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+      "passed": false,
+      "evidence": "Claude never asked the user anything. It went straight from reading the three CSVs to writing a full review.md. To its credit, it did not estimate EMEA: the regional table marks EMEA as '**missing**' and the takeaways say 'EMEA performance this week is unknown.' But it did present a week-over-week company total. review.md has a table of the 4-region vs 3-region totals with 'Reported change' of -30.2% / -31.0% / -31.3%, and the final reply repeats those figures. It also chose a treatment on its own, a like-for-like NA+APAC+LATAM view (+4.0% / +3.1% / +1.8%), and told readers to 'share only the like-for-like view'. That is exactly the decision the expectation says should go back to the user. The only questions are aimed at a third party ('Ask the data owner whether EMEA was dropped, renamed or remapped'), written into the deliverable as actions, not asked of the user before any work was done."
+    }
+  ],
+  "summary": {
+    "passed": 0,
+    "failed": 1,
+    "total": 1,
+    "pass_rate": 0.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Bash": 4,
+      "Read": 3,
+      "Write": 1
+    },
+    "total_tool_calls": 8,
+    "total_steps": 9,
+    "errors_encountered": 0,
+    "output_chars": 3293,
+    "transcript_chars": 8488
+  },
+  "timing": {},
+  "claims": [
+    {
+      "claim": "reported_totals.csv equals the sum of the regional rows present in each file (all six totals match)",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Last week: 4210+3580+2140+960=10890, 186400+152900+88300+34700=462300, 15320+12870+7910+3480=39580. This week: 4390+2210+1000=7600, 192800+90400+35900=319100, 15660+8000+3540=27200. All match reported_totals.csv."
+    },
+    {
+      "claim": "EMEA was 32.9% of last week's orders, 33.1% of revenue and 32.5% of active customers",
+      "type": "factual",
+      "verified": true,
+      "evidence": "3580/10890=32.9%, 152900/462300=33.1%, 12870/39580=32.5%."
+    },
+    {
+      "claim": "Like-for-like (NA+APAC+LATAM) orders are up 4.0%, revenue up 3.1% and active customers up 1.8%",
+      "type": "factual",
+      "verified": true,
+      "evidence": "7310→7600 = +3.97%, 309400→319100 = +3.14%, 26710→27200 = +1.83%."
+    },
+    {
+      "claim": "The headline decline is not a real business decline",
+      "type": "quality",
+      "verified": false,
+      "evidence": "The data can't support this. EMEA's actual performance is unknown, and Claude says so elsewhere. If EMEA's data was lost because the business was restructured or exited, part of the decline could be real. The reasoning is sound, but the claim is stated more confidently than the data allows."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+        "reason": "This one assertion bundles three conditions (asked the user, didn't estimate, didn't present a company total). This run met one, not estimating, and failed the other two. Splitting them would show which behaviour the skill actually changes, and that matters because the baseline already handles the 'don't estimate' part well."
+      },
+      {
+        "reason": "It is unclear whether a company total that is shown but clearly flagged ('Please do not circulate the -30% figures') counts as 'presenting' one. Spell out whether showing a flagged reported total is allowed, so that graders stay consistent."
+      }
+    ],
+    "overall": "The assertion catches the key difference here: the baseline spots the problem but decides the treatment itself instead of asking the user. The checks would be more useful if its three conditions were split into separate assertions."
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "expectations": [
+    {
+      "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+      "passed": true,
+      "evidence": "review.md Focus areas: 'APAC is the main mover. Orders rose from 2,140 to 2,890 (+35.0%), revenue from 88,300 to 121,900 (+38.1%) and active customers from 7,910 to 9,120 (+15.3%). The APAC team has confirmed these numbers are real.' All figures match last_week.csv/this_week.csv. It is framed as real, not as a data error, and there is no hedging. The 'confirmed real' statement comes from the user's prompt, so it is not invented. No cause is attributed anywhere in review.md (no campaign, launch, seasonality, etc.). The final response says so outright: 'The review gives no cause for the APAC jump, since none was provided.'"
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "total": 1,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Skill": 1,
+      "Bash": 1,
+      "Write": 1
+    },
+    "total_tool_calls": 3,
+    "total_steps": 5,
+    "errors_encountered": 0,
+    "output_chars": 1364,
+    "transcript_chars": 6692
+  },
+  "timing": null,
+  "claims": [
+    {
+      "claim": "APAC contributes +33,600 of the +37,100 GBP revenue increase and +750 of the +865 additional orders",
+      "type": "factual",
+      "verified": true,
+      "evidence": "121,900-88,300=33,600; 499,400-462,300=37,100; 2,890-2,140=750; 11,755-10,890=865"
+    },
+    {
+      "claim": "Total WoW: orders +7.9%, revenue +8.0%, customers +3.5%",
+      "type": "factual",
+      "verified": true,
+      "evidence": "865/10890=7.94%, 37100/462300=8.03%, 1380/39580=3.49%"
+    },
+    {
+      "claim": "North America, EMEA and LATAM each moved by about 1–2% on orders",
+      "type": "factual",
+      "verified": false,
+      "evidence": "EMEA orders are +0.8% (3,610 vs 3,580), which falls below the stated 1–2% range. The error is small and the 'about' qualifier softens it, but the claim is still loose."
+    },
+    {
+      "claim": "Regional sums match reported_totals.csv for both weeks",
+      "type": "process",
+      "verified": true,
+      "evidence": "The reconcile.py output shows reconciles:true for all metrics and both weeks, and the arithmetic checks out."
+    },
+    {
+      "claim": "Week label 'week of 2026-10-13' is a guess",
+      "type": "process",
+      "verified": true,
+      "evidence": "The executor flagged in the final response that the label was inferred from today's date."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": ["Week label inferred from today's date (noted in final response; no user_notes.md present)"],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+        "reason": "This assertion bundles three checks: framed as real, figures present, no invented cause. An output that gives the figures but adds a hedge like 'may be a data issue, worth verifying' would be hard to grade consistently. Consider splitting out a separate assertion that the review does not cast doubt on the APAC data or recommend re-verification, since the user already confirmed it."
+      },
+      {
+        "reason": "No assertion checks that the WoW percentages and contribution figures in the prose are correct. The table check covers this-week values only, not the WoW columns or the Focus areas numbers. A wrong percentage (e.g. EMEA's '+0.8%' being summarised as '1–2%') would go uncaught."
+      }
+    ],
+    "overall": "The assertion is reasonable and this output clearly passes it. The gap is that nothing checks the correctness of the derived numbers (WoW % and contributions)."
+  }
+}

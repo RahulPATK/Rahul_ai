@@ -1,0 +1,6 @@
+I've written the review to `review.md`. Total orders are up 7.9%, revenue is up 8.0% and active customers are up 3.5%, and almost all of that growth is APAC.
+
+- **Data check:** the regional rows add up exactly to `reported_totals.csv` for all three metrics in both weeks, so there are no discrepancies.
+- **APAC:** orders are up 35.0%, revenue 38.1% and active customers 15.3%. APAC accounts for about 87–91% of the total growth. Average order value is steady and customers are ordering more often, so it looks like genuine demand. I took the APAC team's confirmation at face value and didn't flag it as a data issue.
+- **Other regions:** North America, EMEA and LATAM are each up about 1% or less on revenue. Excluding APAC, orders are up about 1.3%.
+- **Open question:** the files don't show why APAC jumped. It's worth asking the APAC team whether it was a campaign, a launch or a one-off, and checking next week's numbers to see whether the new level holds. That's in the review as a point to watch.

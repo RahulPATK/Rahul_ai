@@ -1,0 +1,76 @@
+{
+  "expectations": [
+    {
+      "text": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+      "passed": true,
+      "evidence": "Key points cite specific figures that match the CSVs: NA +£4.8k revenue / +145 orders, ~41% of revenue (191,200/468,700 = 40.8%); APAC/LATAM +3.7%/+4.0% revenue and +4.2%/+5.2% orders; EMEA -£3.1k (-2.0%), -90 orders (-2.5%), -80 customers (-0.6%); EMEA AOV £42.71 to £42.92; ex-EMEA growth ~£9.5k (4,800+3,300+1,400). I recomputed all of these and they are correct. On causation, review.md says outright 'The data doesn't show the cause.' The one interpretive line ('The drop looks like lower volume and fewer customers, not lower basket size') is a decomposition of the data (AOV rose while orders and customers fell), not an outside cause. Possible explanations (seasonality, campaign ending, stock, pricing, holiday) appear only as questions for the meeting ('Does anyone in EMEA have context...?'), never as claims. final_response.md also says 'The data doesn't show why.'"
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "total": 1,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Bash": 4,
+      "Write": 2
+    },
+    "total_tool_calls": 6,
+    "total_steps": 7,
+    "errors_encountered": 0,
+    "output_chars": 2713,
+    "transcript_chars": 10145
+  },
+  "timing": {
+    "executor_duration_seconds": 29.3,
+    "total_duration_seconds": 29.3
+  },
+  "claims": [
+    {
+      "claim": "Regional exports reconcile exactly to reported_totals.csv for both weeks",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Regional sums: orders 10,890/11,085, revenue 462,300/468,700, customers 39,580/39,995. These match reported_totals.csv."
+    },
+    {
+      "claim": "All week-over-week % changes in the tables are correct",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Recomputed all 12 regional and 3 total percentages, e.g. EMEA revenue -3,100/152,900 = -2.03%, total orders +195/10,890 = +1.79%. All match to the rounding shown."
+    },
+    {
+      "claim": "Average order value went from £42.45 to £42.28",
+      "type": "factual",
+      "verified": true,
+      "evidence": "462,300/10,890 = 42.45 and 468,700/11,085 = 42.28"
+    },
+    {
+      "claim": "The regional figures in review.md match this_week.csv",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The This week columns of the three per-metric tables match this_week.csv exactly (e.g. NA 4,355 / 191,200 / 15,610). The deterministic table_rows_match_csv check failed, which is most likely a parsing problem: the review splits the data into one table per metric with Last week/This week columns, so it has no single region×metric table."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": [
+      "Executor's inline Python was blocked by the shell's brace/quote checker, so it wrote the script to the scratchpad instead"
+    ]
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+        "reason": "This check failed even though every figure is correct. The review uses separate Orders/Revenue/Customers tables with Last week/This week columns, and the checker seems to expect a single table with one row per region and metric columns. Likewise, 'No table row labelled Total' fails a review whose headline table gives the correct totals in a metric-per-row layout. Both checks are testing layout, not correctness, and should accept the alternative table shapes."
+      },
+      {
+        "assertion": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+        "reason": "This combines two properties, and it is not clear whether hypotheses framed as questions ('seasonality, a campaign ending...?') are allowed. Consider saying explicitly that speculative causes are acceptable only when framed as open questions, and adding a check that the cited figures are arithmetically correct, not just present."
+      }
+    ],
+    "overall": "The LLM-graded assertion is reasonable. The deterministic table checks look brittle to table layout and produced false failures on a correct review."
+  }
+}

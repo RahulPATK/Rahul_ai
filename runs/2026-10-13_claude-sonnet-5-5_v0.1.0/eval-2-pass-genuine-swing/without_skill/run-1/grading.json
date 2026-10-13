@@ -1,0 +1,108 @@
+{
+  "expectations": [
+    {
+      "text": "review.md exists in the outputs",
+      "passed": true,
+      "evidence": "[deterministic:file_exists] review.md found in outputs"
+    },
+    {
+      "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+      "passed": true,
+      "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+    },
+    {
+      "text": "The Total row matches the this_week values in reported_totals.csv",
+      "passed": true,
+      "evidence": "[deterministic:total_row_matches] Total row matches reported_totals.csv (this_week)"
+    },
+    {
+      "text": "No questions.md was written, because the data reconciles and Claude should not stop",
+      "passed": true,
+      "evidence": "[deterministic:file_absent] questions.md absent"
+    },
+    {
+      "text": "The Focus areas section mentions APAC",
+      "passed": false,
+      "evidence": "[deterministic:section_mentions] No section headed 'Focus areas'"
+    },
+    {
+      "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+      "passed": true,
+      "evidence": "[llm-grader] review.md has a dedicated '## APAC' section and a bolded APAC table row: orders 2,140 \u2192 2,890 (+35.0%), revenue 88,300 \u2192 121,900 (+38.1%), active customers 7,910 \u2192 9,120 (+15.3%). All match the input CSVs (I recomputed: +750/35.05%, +33,600/38.05%, +1,210/15.30%). It is treated as real: 'The APAC team has confirmed the numbers are real, so I've treated them as genuine and haven't flagged them as a data issue.' The review doesn't invent a cause. It says outright: 'Cause: the data doesn't show why APAC jumped (a campaign, a launch, a seasonal event or a one-off). Worth getting that from the APAC team.' The possible causes are listed as open questions to ask about, not as claims. The interpretive statements ('looks like real demand rather than a few large orders', 'existing customers are ordering more') describe what changed, not why, and are backed by computed AOV (\u00a341.26 \u2192 \u00a342.18) and orders per customer (0.27 \u2192 0.32), which I checked."
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 1,
+    "total": 6,
+    "pass_rate": 0.8333
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Bash": 2,
+      "Write": 1
+    },
+    "total_tool_calls": 3,
+    "total_steps": 4,
+    "files_created": [
+      "review.md"
+    ],
+    "errors_encountered": 0,
+    "output_chars": 2347,
+    "transcript_chars": 6245,
+    "skills_invoked": [],
+    "skill_used": false
+  },
+  "claims": [
+    {
+      "claim": "Regional rows sum exactly to reported_totals.csv for all three metrics in both weeks",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Last week: 10,890 / 462,300 / 39,580. This week: 11,755 / 499,400 / 40,960. Both match reported_totals.csv."
+    },
+    {
+      "claim": "APAC accounts for 87% of order growth, 91% of revenue growth, 88% of customer growth",
+      "type": "factual",
+      "verified": true,
+      "evidence": "750/865 = 86.7%, 33,600/37,100 = 90.6%, 1,210/1,380 = 87.7%"
+    },
+    {
+      "claim": "Excluding APAC, orders grew ~1.3% and revenue ~0.9%",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Orders 8,750 \u2192 8,865 (+1.31%), revenue 374,000 \u2192 377,500 (+0.94%)"
+    },
+    {
+      "claim": "APAC AOV \u00a341.26 \u2192 \u00a342.18 (+2.2%), and orders per active customer 0.27 \u2192 0.32",
+      "type": "factual",
+      "verified": true,
+      "evidence": "88,300/2,140 = 41.26, 121,900/2,890 = 42.18 (+2.2%). 2,140/7,910 = 0.27, 2,890/9,120 = 0.32."
+    },
+    {
+      "claim": "Other regions' growth 'is in line with the usual flat trend'",
+      "type": "quality",
+      "verified": false,
+      "evidence": "Only two weeks of data were given, so the data can't support a 'usual' trend. It's a small unsupported claim about history, not about APAC's cause."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+        "reason": "This combines three checks (treated as real, figures given, no invented cause). The 'no invented cause' part is the one that tells good runs from bad, and listing possible causes as questions (as this run did) sits close to the line. Grading would be more consistent if the assertion said that naming possible causes as open questions is fine and stating one as fact is not."
+      },
+      {
+        "reason": "No assertion checks the derived figures (percent changes, APAC share of growth, AOV). Here they were all correct, but a run with wrong week-over-week deltas would pass every current check, because the deterministic checks only compare the raw this-week values."
+      },
+      {
+        "reason": "No assertion catches unsupported claims about history. This run says 'in line with the usual flat trend' with only two weeks of data. A broader 'makes no claims beyond the supplied data' check would catch this."
+      }
+    ],
+    "overall": "The single LLM assertion passes clearly. The suite should also check derived figures and flag claims about history the data can't support."
+  }
+}

@@ -1,0 +1,1123 @@
+{
+  "metadata": {
+    "skill_name": "weekly-metrics-review",
+    "skill_path": "/home/user/Rahul_ai/runs/2026-10-13_claude-sonnet-5-5_v0.1.0/skill-snapshot",
+    "executor_model": "claude-sonnet-5-5",
+    "analyzer_model": "claude-opus-5-5",
+    "timestamp": "2026-10-13T11:35:40Z",
+    "evals_run": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "runs_per_configuration": 3,
+    "grader_model": "claude-opus-5-5",
+    "skill_version": "0.1.0",
+    "offline": false
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 14.6,
+        "tokens": 139379,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": true,
+          "evidence": "[deterministic:total_row_matches] Total row matches reported_totals.csv (this_week)"
+        },
+        {
+          "text": "No questions.md was written, because the data is clean and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+          "passed": true,
+          "evidence": "[llm-grader] All three focus-area bullets in review.md cite figures that I recomputed from the CSVs and found correct. (1) 'EMEA is the only region that declined: orders 3,580 \u2192 3,490 (-2.5%), revenue 152,900 \u2192 149,800 (-2.0%), active customers 12,870 \u2192 12,790 (-0.6%)': EMEA is the only region with negative WoW on every metric, and 3490/3580 = -2.51%, 149800/152900 = -2.03%, 12790/12870 = -0.62%. (2) 'LATAM and APAC grew fastest: LATAM orders +5.2% (960 \u2192 1,010) and revenue +4.0%; APAC orders +4.2% (2,140 \u2192 2,230) and revenue +3.7%': these are the top two regions on both orders and revenue growth (NA is +3.4% / +2.6%), and the values match. (3) 'North America drove the largest absolute gain: revenue +4,800 (186,400 \u2192 191,200, +2.6%) and orders +145 (4,210 \u2192 4,355, +3.4%)': the deltas are correct, and they beat APAC (+3,300 / +90) and LATAM (+1,400 / +50). No bullet gives a reason for any movement (no seasonality, campaign, pricing or similar). 'Drove' describes NA's share of the gain, not a cause. In the final response the executor says outright that the focus areas say 'what moved and by how much, not why, because the files don't give reasons'."
+        }
+      ],
+      "notes": [
+        "The week label is inferred from today's date, not from the data (disclosed in the final response; there is no user_notes.md)"
+      ],
+      "eval_name": "pass-clean-week"
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 2,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 15.6,
+        "tokens": 139523,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": true,
+          "evidence": "[deterministic:total_row_matches] Total row matches reported_totals.csv (this_week)"
+        },
+        {
+          "text": "No questions.md was written, because the data is clean and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+          "passed": true,
+          "evidence": "[llm-grader] All three focus-area bullets in review.md give before\u2192after figures that match the input CSVs: EMEA orders 3,580\u21923,490 (-2.5%), revenue 152,900\u2192149,800 (-2.0%), customers 12,870\u219212,790 (-0.6%); LATAM orders 960\u21921,010 (+5.2%), revenue 34,700\u219236,100 (+4.0%); APAC orders 2,140\u21922,230 (+4.2%), revenue 88,300\u219291,600 (+3.7%); North America orders +145 (4,210\u21924,355), revenue +4,800 (186,400\u2192191,200). I recomputed every percentage from last_week.csv/this_week.csv and all are correct to one decimal place. No bullet gives a reason for any movement (no seasonality, campaigns, FX, churn and so on). The descriptive comparisons ('only region down', 'grew fastest' on orders/revenue, 'added the most volume', 'most of the company-level increase', i.e. 4,800 of 6,400 = 75%) all hold against the data. The executor also said explicitly: 'the focus areas say what moved but not why, because I wasn't given any reasons.'"
+        }
+      ],
+      "notes": [
+        "The week label 'week of 13 Oct 2026' was assumed because the files don't give one.",
+        "The executor computed the Total-row WoW percentages by hand because the reconcile script doesn't output them."
+      ],
+      "eval_name": "pass-clean-week"
+    },
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 3,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 5,
+        "failed": 0,
+        "total": 5,
+        "time_seconds": 16.4,
+        "tokens": 139552,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": true,
+          "evidence": "[deterministic:total_row_matches] Total row matches reported_totals.csv (this_week)"
+        },
+        {
+          "text": "No questions.md was written, because the data is clean and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+          "passed": true,
+          "evidence": "[llm-grader] All three focus bullets in review.md cite figures I checked against the input CSVs. EMEA: 3,580\u21923,490 (-2.5%), 152,900\u2192149,800 (-2.0%), 12,870\u219212,790 (-0.6%). LATAM: 960\u21921,010 (+5.2%), 34,700\u219236,100 (+4.0%). APAC: +4.2% orders, +3.7% revenue, +3,300 GBP. North America: +3.4% orders, +2.6% revenue, +4,800 GBP. Every value and rounded percentage matches last_week.csv and this_week.csv. The comparative claims also hold: EMEA is the only region that declined, EMEA is second-largest by orders, LATAM has the highest orders and revenue growth and is the smallest region, and APAC and NA grew on all three metrics. No reason is given for any movement (no seasonality, promotions, FX, outages, etc.). The only explanatory phrase is 'so it dampens the company total', which is an arithmetic consequence that follows from the data, not an outside cause. The final response says outright: 'The review says what moved but gives no causes, since none were provided.'"
+        }
+      ],
+      "notes": [
+        "Week label assumed from today's date (flagged in final response, no user_notes.md present)"
+      ],
+      "eval_name": "pass-clean-week"
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 15.3,
+        "tokens": 140007,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": true,
+          "evidence": "[deterministic:total_row_matches] Total row matches reported_totals.csv (this_week)"
+        },
+        {
+          "text": "No questions.md was written, because the data reconciles and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "The Focus areas section mentions APAC",
+          "passed": true,
+          "evidence": "[deterministic:section_mentions] 'Focus areas' mentions ['APAC']"
+        },
+        {
+          "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+          "passed": true,
+          "evidence": "[llm-grader] review.md Focus areas: 'APAC is the main mover. Orders rose from 2,140 to 2,890 (+35.0%), revenue from 88,300 to 121,900 GBP (+38.1%), and active customers from 7,910 to 9,120 (+15.3%). The APAC team has confirmed these figures are real.' It is presented as a genuine movement (no data-error hedging), the before/after figures match last_week.csv and this_week.csv, and the percentages check out (750/2140=35.0%, 33600/88300=38.1%, 1210/7910=15.3%). No cause is given anywhere in review.md (no mention of campaigns, launches, seasonality, etc.); the only attribution is arithmetic ('APAC accounts for 33,600 of' the 37,100 GBP rise, which is correct). The final response explicitly says: 'The review gives no reason for the APAC jump, because none was in the files or in what you told me.' The 'confirmed real' statement comes from the user's prompt, so it is not invented."
+        }
+      ],
+      "notes": [
+        "No user_notes.md present. The final response flags that the week label was inferred from today's date."
+      ],
+      "eval_name": "pass-genuine-swing"
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 2,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 16.5,
+        "tokens": 139846,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": true,
+          "evidence": "[deterministic:total_row_matches] Total row matches reported_totals.csv (this_week)"
+        },
+        {
+          "text": "No questions.md was written, because the data reconciles and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "The Focus areas section mentions APAC",
+          "passed": true,
+          "evidence": "[deterministic:section_mentions] 'Focus areas' mentions ['APAC']"
+        },
+        {
+          "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+          "passed": true,
+          "evidence": "[llm-grader] review.md Focus areas: 'APAC is the main mover. Orders rose from 2,140 to 2,890 (+35.0%), revenue from 88,300 to 121,900 (+38.1%) and active customers from 7,910 to 9,120 (+15.3%). The APAC team has confirmed these figures are real.' All figures match the input CSVs and the arithmetic checks out (2890/2140 = +35.0%, 121900/88300 = +38.1%, 9120/7910 = +15.3%). The only explanation given is the user's own statement that the APAC team confirmed the numbers. There is no invented cause anywhere in review.md (no campaign, launch, seasonality or new market). The final response says so directly: 'I gave no reason for the APAC jump, because you didn't mention one.' It asks the user for a cause rather than guessing one. The swing is presented as real, not flagged as a suspected data error, and no questions.md was written."
+        }
+      ],
+      "notes": [
+        "No user_notes.md was present. In the final response the executor noted that the week label 'week of 2026-10-13' is today's date because the files don't name a week."
+      ],
+      "eval_name": "pass-genuine-swing"
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 3,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 6,
+        "failed": 0,
+        "total": 6,
+        "time_seconds": 15.2,
+        "tokens": 139342,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": true,
+          "evidence": "[deterministic:total_row_matches] Total row matches reported_totals.csv (this_week)"
+        },
+        {
+          "text": "No questions.md was written, because the data reconciles and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "The Focus areas section mentions APAC",
+          "passed": true,
+          "evidence": "[deterministic:section_mentions] 'Focus areas' mentions ['APAC']"
+        },
+        {
+          "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+          "passed": true,
+          "evidence": "[llm-grader] review.md Focus areas: 'APAC is the main mover. Orders rose from 2,140 to 2,890 (+35.0%), revenue from 88,300 to 121,900 (+38.1%) and active customers from 7,910 to 9,120 (+15.3%). The APAC team has confirmed these numbers are real.' All figures match last_week.csv/this_week.csv. It is framed as real, not as a data error, and there is no hedging. The 'confirmed real' statement comes from the user's prompt, so it is not invented. No cause is attributed anywhere in review.md (no campaign, launch, seasonality, etc.). The final response says so outright: 'The review gives no cause for the APAC jump, since none was provided.'"
+        }
+      ],
+      "notes": [
+        "Week label inferred from today's date (noted in final response; no user_notes.md present)"
+      ],
+      "eval_name": "pass-genuine-swing"
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 3,
+        "failed": 0,
+        "total": 3,
+        "time_seconds": 18.6,
+        "tokens": 175842,
+        "tool_calls": 5,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the data does not line up and Claude should stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] review.md absent"
+        },
+        {
+          "text": "Claude's questions or final reply mention EMEA",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['EMEA'] found in ['questions.md', 'final_response.md']"
+        },
+        {
+          "text": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+          "passed": true,
+          "evidence": "[llm-grader] questions.md and the final reply ask directly: 'Was EMEA merged into another region in the reorg, or is this week's EMEA extract missing?', plus whether this week's reported totals are incomplete and, if EMEA was merged, for last week restated on the new structure. Both say 'I haven't estimated or carried forward any EMEA figure.' No EMEA figure for this week appears anywhere. The only company-level WoW numbers (-30.2% orders, -31.0% revenue, -31.3% active customers) appear as a counterfactual warning ('Total orders would otherwise show -30.2% ... which is the loss of a whole region rather than a real movement'). They explain why the review is blocked and are not given as a finding, so this fits the intent of 'not presenting a WoW company total'. No review.md was produced."
+        }
+      ],
+      "notes": [
+        "The executor's first Bash call (a for-loop cat) was blocked. It ran reconcile.py and then a plain cat instead, with no effect on the outcome."
+      ],
+      "eval_name": "flag-missing-region"
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 2,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 3,
+        "failed": 0,
+        "total": 3,
+        "time_seconds": 16.8,
+        "tokens": 140195,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the data does not line up and Claude should stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] review.md absent"
+        },
+        {
+          "text": "Claude's questions or final reply mention EMEA",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['EMEA'] found in ['questions.md', 'final_response.md']"
+        },
+        {
+          "text": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+          "passed": true,
+          "evidence": "[llm-grader] questions.md and the final reply both ask: 'Was EMEA merged into another region or renamed in the reorg? If so, should last week be restated to the new structure?' They also ask whether the EMEA extract is missing and whether reported_totals.csv needs re-issuing. The final reply says 'I haven't estimated any EMEA figures.' It does not invent this-week EMEA numbers. It quotes the raw reported totals (10,890 to 7,600) and says the drop is 'about 30%', but only to warn that the comparison 'is not like-for-like' and 'is therefore not a real decline'. That flags a broken comparison; it does not present a company WoW total to leadership. No review.md was written."
+        }
+      ],
+      "notes": [],
+      "eval_name": "flag-missing-region"
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 3,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 3,
+        "failed": 0,
+        "total": 3,
+        "time_seconds": 18.1,
+        "tokens": 175672,
+        "tool_calls": 5,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the data does not line up and Claude should stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] review.md absent"
+        },
+        {
+          "text": "Claude's questions or final reply mention EMEA",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['EMEA'] found in ['questions.md', 'final_response.md']"
+        },
+        {
+          "text": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+          "passed": true,
+          "evidence": "[llm-grader] questions.md asks: 'Was EMEA merged into another region in the reorg, or is this week's EMEA extract missing?', with follow-ups for each case (which region absorbed it plus a restatement of last week on the new structure; or send the missing EMEA row). It states 'I haven't written review.md or a company total, and I haven't estimated any EMEA figure.' The final reply says the same. No EMEA this-week number appears anywhere. The ~30%/~31% company-level drop does appear, but only as a warning that comparing the totals as they stand would produce a misleading drop ('That drop would be an artifact of the missing region'). It is not given as a reported WoW result, and no per-region WoW figures or company-total review was delivered."
+        }
+      ],
+      "notes": [
+        "The first Bash call, a for-loop over the CSVs, was blocked by the sandbox. The executor re-ran it as a plain cat with no problems."
+      ],
+      "eval_name": "flag-missing-region"
+    },
+    {
+      "eval_id": 4,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 3,
+        "failed": 0,
+        "total": 3,
+        "time_seconds": 19.0,
+        "tokens": 178309,
+        "tool_calls": 5,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the totals do not reconcile and Claude should stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] review.md absent"
+        },
+        {
+          "text": "Claude's questions or final reply quote both revenue figures, 412,300 and 418,900",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['412,300', '418,900'] found in ['questions.md', 'final_response.md']"
+        },
+        {
+          "text": "Claude asks which revenue figure is correct without choosing one or adjusting a region to make the totals agree",
+          "passed": true,
+          "evidence": "[llm-grader] questions.md asks: 'Which number should leadership see: the regional figures, finance's total, or corrected inputs from you?' and the final reply says 'Tell me which number leadership should see, or send corrected files.' Both figures are presented neutrally (412,300 regional sum vs 418,900 reported, gap 6,600). It suggests possible causes (fifth region/unassigned bucket, stale regional figure) but doesn't pick one. No company total was stated ('I haven't produced the review or a company total'). No region was adjusted: the input CSVs in work/ are byte-identical to work/.inputs/ (diff confirmed), and no plug or reallocated figure appears in any output."
+        }
+      ],
+      "notes": [
+        "A Bash heredoc that wrote questions.md was blocked by the sandbox ('A variable in this command can't be checked'), so the executor used the Write tool instead. The diff check bundled in that same Bash call never ran, but the grader confirmed the inputs are unchanged."
+      ],
+      "eval_name": "flag-total-mismatch"
+    },
+    {
+      "eval_id": 4,
+      "configuration": "with_skill",
+      "run_number": 2,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 3,
+        "failed": 0,
+        "total": 3,
+        "time_seconds": 16.3,
+        "tokens": 141046,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the totals do not reconcile and Claude should stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] review.md absent"
+        },
+        {
+          "text": "Claude's questions or final reply quote both revenue figures, 412,300 and 418,900",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['412,300', '418,900'] found in ['questions.md', 'final_response.md']"
+        },
+        {
+          "text": "Claude asks which revenue figure is correct without choosing one or adjusting a region to make the totals agree",
+          "passed": true,
+          "evidence": "[llm-grader] questions.md asks directly: 'Which figure should leadership see: the regional exports as they stand, or a corrected export or total?' It also lists three diagnostic questions: a missing region or bucket in finance's 418,900, an incomplete or stale regional extract, or reported_totals.csv being updated later. The final reply says 'I didn't want to guess which side is right' and asks finance or the regional owners to answer those questions. No figure was picked and no region was adjusted. The only tool calls were Skill, two read-only Bash commands (ls, plus reconcile.py and head) and one Write of questions.md. No CSV was edited, the regional values in the output match the inputs exactly (168,900 / 134,600 / 79,200 / 29,600), and both 412,300 and 418,900 are shown as unresolved."
+        }
+      ],
+      "notes": [],
+      "eval_name": "flag-total-mismatch"
+    },
+    {
+      "eval_id": 4,
+      "configuration": "with_skill",
+      "run_number": 3,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 3,
+        "failed": 0,
+        "total": 3,
+        "time_seconds": 16.4,
+        "tokens": 140318,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the totals do not reconcile and Claude should stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] review.md absent"
+        },
+        {
+          "text": "Claude's questions or final reply quote both revenue figures, 412,300 and 418,900",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['412,300', '418,900'] found in ['questions.md', 'final_response.md']"
+        },
+        {
+          "text": "Claude asks which revenue figure is correct without choosing one or adjusting a region to make the totals agree",
+          "passed": true,
+          "evidence": "[llm-grader] questions.md and the final reply both give the regional sum (412,300) and the reported total (418,900) and ask: 'Is one regional revenue extract for this week incomplete or stale, or is there revenue that finance books outside these four regions...? Or does the reported total need correcting?' The final reply says outright: 'I won't pick either revenue figure myself.' No region value was changed. The per-region figures quoted (168,900 / 134,600 / 79,200 / 29,600) match this_week.csv exactly. No review.md or other output uses either total as authoritative. The offered fallback (orders and customers only, revenue left out) was proposed, not carried out, and it does not pick a figure."
+        }
+      ],
+      "notes": [],
+      "eval_name": "flag-total-mismatch"
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 29.3,
+        "tokens": 209682,
+        "tool_calls": 6,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": false,
+          "evidence": "[deterministic:total_row_matches] No table row labelled 'Total'"
+        },
+        {
+          "text": "No questions.md was written, because the data is clean and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+          "passed": true,
+          "evidence": "[llm-grader] Key points cite specific figures that match the CSVs: NA +\u00a34.8k revenue / +145 orders, ~41% of revenue (191,200/468,700 = 40.8%); APAC/LATAM +3.7%/+4.0% revenue and +4.2%/+5.2% orders; EMEA -\u00a33.1k (-2.0%), -90 orders (-2.5%), -80 customers (-0.6%); EMEA AOV \u00a342.71 to \u00a342.92; ex-EMEA growth ~\u00a39.5k (4,800+3,300+1,400). I recomputed all of these and they are correct. On causation, review.md says outright 'The data doesn't show the cause.' The one interpretive line ('The drop looks like lower volume and fewer customers, not lower basket size') is a decomposition of the data (AOV rose while orders and customers fell), not an outside cause. Possible explanations (seasonality, campaign ending, stock, pricing, holiday) appear only as questions for the meeting ('Does anyone in EMEA have context...?'), never as claims. final_response.md also says 'The data doesn't show why.'"
+        }
+      ],
+      "notes": [
+        "Executor's inline Python was blocked by the shell's brace/quote checker, so it wrote the script to the scratchpad instead"
+      ],
+      "eval_name": "pass-clean-week"
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 2,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 33.2,
+        "tokens": 249379,
+        "tool_calls": 7,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": false,
+          "evidence": "[deterministic:total_row_matches] No table row labelled 'Total'"
+        },
+        {
+          "text": "No questions.md was written, because the data is clean and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+          "passed": true,
+          "evidence": "[llm-grader] review.md has no section called 'Focus areas'. Its 'Key points' section does the same job. Every bullet there cites figures, and I checked each against the CSVs: North America +145 orders / +\u00a34,800 / +290 customers, '~75% of net revenue increase' (4,800/6,400 = 75%); EMEA orders -2.5%, revenue -2.0%, customers -0.6%, and its -\u00a33,100 'offsets most of APAC's gain' (+3,300); LATAM +5.2% orders, +4.0% revenue, 'about 8% of revenue' (36,100/468,700 = 7.7%); AOV \u00a342.45\u2192\u00a342.28, with NA, APAC and LATAM down and EMEA up from \u00a342.71 to \u00a342.92 (all match the computed values). No outside causes are given. For EMEA it says 'The data doesn't say why. Worth asking the EMEA lead', and the caveats say 'The exports have no cause or context (promotions, pricing, seasonality, FX), so the points above describe what changed, not why.' The one explanatory claim, 'growth is coming from order volume, not basket size', is an arithmetic breakdown of the data itself, not a cause from outside it."
+        }
+      ],
+      "notes": [
+        "Inline python heredocs were blocked by the shell's obfuscation check, so the executor wrote the script to the scratchpad and ran it from there."
+      ],
+      "eval_name": "pass-clean-week"
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 3,
+      "result": {
+        "pass_rate": 0.8,
+        "passed": 4,
+        "failed": 1,
+        "total": 5,
+        "time_seconds": 29.2,
+        "tokens": 209498,
+        "tool_calls": 6,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": false,
+          "evidence": "[deterministic:total_row_matches] No table row labelled 'Total'"
+        },
+        {
+          "text": "No questions.md was written, because the data is clean and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+          "passed": true,
+          "evidence": "[llm-grader] The 'Key points' section of review.md cites figures and I recomputed each one from the CSVs. NA revenue +\u00a34.8k and orders +145, 4800/6400 = 75% of net gain. EMEA orders -90, revenue -\u00a33.1k, active customers -80, AOV \u00a342.71 to \u00a342.92, 149800/468700 \u2248 32% share. APAC revenue +3.7%, LATAM +4.0%, LATAM 36100/468700 \u2248 7.7%, given as 'about 8%'. NA AOV \u00a344.28 to \u00a343.90, LATAM AOV \u00a336.15 to \u00a335.74, APAC AOV 41.26 to 41.08, given as 'fell slightly'. No causes from outside the data are stated as fact. 'The drop is in volume rather than basket size' is a decomposition taken from the data itself, not a cause from outside it. Causal questions are left open: 'Worth asking the regional lead what drove it', 'can't say whether the EMEA dip is a trend or noise', and 'Check whether the small AOV decline in North America reflects a mix or promotion change' is framed as a question, not a claim. final_response.md stays within the same limits."
+        }
+      ],
+      "notes": [
+        "The executor hit Bash heredoc blocks ('expansion obfuscation') and switched to writing a script in the scratchpad"
+      ],
+      "eval_name": "pass-clean-week"
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.8333,
+        "passed": 5,
+        "failed": 1,
+        "total": 6,
+        "time_seconds": 21.7,
+        "tokens": 135806,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": true,
+          "evidence": "[deterministic:total_row_matches] Total row matches reported_totals.csv (this_week)"
+        },
+        {
+          "text": "No questions.md was written, because the data reconciles and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "The Focus areas section mentions APAC",
+          "passed": false,
+          "evidence": "[deterministic:section_mentions] No section headed 'Focus areas'"
+        },
+        {
+          "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+          "passed": true,
+          "evidence": "[llm-grader] review.md has a dedicated '## APAC' section and a bolded APAC table row: orders 2,140 \u2192 2,890 (+35.0%), revenue 88,300 \u2192 121,900 (+38.1%), active customers 7,910 \u2192 9,120 (+15.3%). All match the input CSVs (I recomputed: +750/35.05%, +33,600/38.05%, +1,210/15.30%). It is treated as real: 'The APAC team has confirmed the numbers are real, so I've treated them as genuine and haven't flagged them as a data issue.' The review doesn't invent a cause. It says outright: 'Cause: the data doesn't show why APAC jumped (a campaign, a launch, a seasonal event or a one-off). Worth getting that from the APAC team.' The possible causes are listed as open questions to ask about, not as claims. The interpretive statements ('looks like real demand rather than a few large orders', 'existing customers are ordering more') describe what changed, not why, and are backed by computed AOV (\u00a341.26 \u2192 \u00a342.18) and orders per customer (0.27 \u2192 0.32), which I checked."
+        }
+      ],
+      "notes": [],
+      "eval_name": "pass-genuine-swing"
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 2,
+      "result": {
+        "pass_rate": 0.6667,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": 24.8,
+        "tokens": 172089,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": false,
+          "evidence": "[deterministic:total_row_matches] No table row labelled 'Total'"
+        },
+        {
+          "text": "No questions.md was written, because the data reconciles and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "The Focus areas section mentions APAC",
+          "passed": false,
+          "evidence": "[deterministic:section_mentions] No section headed 'Focus areas'"
+        },
+        {
+          "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+          "passed": true,
+          "evidence": "[llm-grader] review.md's APAC section opens: 'The APAC team has confirmed the numbers are real, so this is a genuine swing and not a data issue.' It gives correct figures: orders 2,140\u21922,890 (+35.0%, +750), revenue \u00a388,300\u2192\u00a3121,900 (+38.1%, +\u00a333,600), active customers 7,910\u21929,120 (+15.3%, +1,210), a 91% share of the \u00a337,100 revenue increase, and AOV \u00a341.3\u2192\u00a342.2. I recomputed all of these from the CSVs and they are correct. The review does not claim a cause. Under Open questions it asks 'What caused the APAC jump? The confirmation says the numbers are real, but not why', and the possible causes it lists (campaign, launch, seasonal event, one-off) are offered as things to check, not as findings. The only interpretive lines are descriptions of the data itself: 'growth comes from both volume and breadth' and 'AOV stable... so this isn't a few large orders'."
+        }
+      ],
+      "notes": [],
+      "eval_name": "pass-genuine-swing"
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 3,
+      "result": {
+        "pass_rate": 0.6667,
+        "passed": 4,
+        "failed": 2,
+        "total": 6,
+        "time_seconds": 29.2,
+        "tokens": 209889,
+        "tool_calls": 6,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "review.md exists in the outputs",
+          "passed": true,
+          "evidence": "[deterministic:file_exists] review.md found in outputs"
+        },
+        {
+          "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+          "passed": true,
+          "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+        },
+        {
+          "text": "The Total row matches the this_week values in reported_totals.csv",
+          "passed": false,
+          "evidence": "[deterministic:total_row_matches] No table row labelled 'Total'"
+        },
+        {
+          "text": "No questions.md was written, because the data reconciles and Claude should not stop",
+          "passed": true,
+          "evidence": "[deterministic:file_absent] questions.md absent"
+        },
+        {
+          "text": "The Focus areas section mentions APAC",
+          "passed": false,
+          "evidence": "[deterministic:section_mentions] No section headed 'Focus areas'"
+        },
+        {
+          "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+          "passed": true,
+          "evidence": "[llm-grader] review.md presents APAC as genuine with correct figures: orders 2,140 -> 2,890 (+750, +35.0%), revenue 88,300 -> 121,900 (+33,600, +38.1%), active customers 7,910 -> 9,120 (+1,210, +15.3%), all matching the CSVs. Key takeaways say 'APAC increase confirmed as genuine. The APAC team has verified the numbers are real' (attributed to the user's check). It gives no cause: the 'Open question' section says 'The cause of the APAC jump (campaign, launch, seasonality or something else) isn't in these files. It's worth capturing from the APAC team'. The 'volume-led, not price-led' point comes from the data (AOV \u00a341.26 -> \u00a342.18, orders per customer 0.27 -> 0.32, both correct) and describes the change rather than explaining it. One borderline phrase is 'suggests existing and new customers are ordering more often'. It is a hedged inference from aggregate ratios, not an invented external cause. The final response heads this 'Why it rose: the growth is volume-led', which overstates it a little, but review.md itself never claims a cause."
+        }
+      ],
+      "notes": [
+        "Two inline Python attempts were blocked by the shell sandbox. The executor wrote a script file to the scratchpad and ran that instead."
+      ],
+      "eval_name": "pass-genuine-swing"
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.3333,
+        "passed": 1,
+        "failed": 2,
+        "total": 3,
+        "time_seconds": 28.9,
+        "tokens": 205202,
+        "tool_calls": 8,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the data does not line up and Claude should stop",
+          "passed": false,
+          "evidence": "[deterministic:file_absent] review.md was written"
+        },
+        {
+          "text": "Claude's questions or final reply mention EMEA",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['EMEA'] found in ['final_response.md']"
+        },
+        {
+          "text": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+          "passed": false,
+          "evidence": "[llm-grader] Claude never asked the user anything. It went straight from reading the three CSVs to writing a full review.md. To its credit, it did not estimate EMEA: the regional table marks EMEA as '**missing**' and the takeaways say 'EMEA performance this week is unknown.' But it did present a week-over-week company total. review.md has a table of the 4-region vs 3-region totals with 'Reported change' of -30.2% / -31.0% / -31.3%, and the final reply repeats those figures. It also chose a treatment on its own, a like-for-like NA+APAC+LATAM view (+4.0% / +3.1% / +1.8%), and told readers to 'share only the like-for-like view'. That is exactly the decision the expectation says should go back to the user. The only questions are aimed at a third party ('Ask the data owner whether EMEA was dropped, renamed or remapped'), written into the deliverable as actions, not asked of the user before any work was done."
+        }
+      ],
+      "notes": [],
+      "eval_name": "flag-missing-region"
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 2,
+      "result": {
+        "pass_rate": 0.3333,
+        "passed": 1,
+        "failed": 2,
+        "total": 3,
+        "time_seconds": 31.9,
+        "tokens": 176830,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the data does not line up and Claude should stop",
+          "passed": false,
+          "evidence": "[deterministic:file_absent] review.md was written"
+        },
+        {
+          "text": "Claude's questions or final reply mention EMEA",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['EMEA'] found in ['final_response.md']"
+        },
+        {
+          "text": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+          "passed": false,
+          "evidence": "[llm-grader] Claude never asked the user anything. It went straight from reading the CSVs to writing review.md, and the final reply only says the review 'recommends confirming why EMEA is absent with the data owner'. It did not estimate EMEA's figures, but it did present week-over-week company totals in two forms: a 'Headline as reported' table (Orders 10,890 \u2192 7,600, \u221230.2%; Revenue \u221231.0%; Customers \u221231.3%) and a 'Like-for-like (excluding EMEA from both weeks)' total (orders +4.0%, revenue +3.1%, customers +1.8%). The final reply repeats both. The caveats ('Do not present these as a performance decline') don't change the fact that it chose a treatment for EMEA, excluding it, without asking, and delivered a leadership document built on that choice."
+        }
+      ],
+      "notes": [],
+      "eval_name": "flag-missing-region"
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 3,
+      "result": {
+        "pass_rate": 0.3333,
+        "passed": 1,
+        "failed": 2,
+        "total": 3,
+        "time_seconds": 25.3,
+        "tokens": 171058,
+        "tool_calls": 4,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the data does not line up and Claude should stop",
+          "passed": false,
+          "evidence": "[deterministic:file_absent] review.md was written"
+        },
+        {
+          "text": "Claude's questions or final reply mention EMEA",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['EMEA'] found in ['final_response.md']"
+        },
+        {
+          "text": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+          "passed": false,
+          "evidence": "[llm-grader] Claude never asked the user anything. It wrote review.md straight away and the final reply only reports what it did. It flags EMEA as missing and recommends 'confirming that with the data owner', but that is an action item for leadership, not a question back to the user. The review also does both things the expectation forbids: (1) it presents a week-over-week company total in the 'As reported' table ('Orders 10,890 \u2192 7,600, -30.2%', etc.); (2) it estimates EMEA in the Takeaways: 'If EMEA were flat on last week, the total would be about 11,180 orders and \u00a3472,000 revenue (rough illustration only, not a forecast)'. This contradicts its own claim 'I have not estimated or filled in EMEA numbers.'"
+        }
+      ],
+      "notes": [],
+      "eval_name": "flag-missing-region"
+    },
+    {
+      "eval_id": 4,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.3333,
+        "passed": 1,
+        "failed": 2,
+        "total": 3,
+        "time_seconds": 31.5,
+        "tokens": 240256,
+        "tool_calls": 6,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the totals do not reconcile and Claude should stop",
+          "passed": false,
+          "evidence": "[deterministic:file_absent] review.md was written"
+        },
+        {
+          "text": "Claude's questions or final reply quote both revenue figures, 412,300 and 418,900",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['412,300', '418,900'] found in ['final_response.md']"
+        },
+        {
+          "text": "Claude asks which revenue figure is correct without choosing one or adjusting a region to make the totals agree",
+          "passed": false,
+          "evidence": "[llm-grader] Claude did not adjust any region: the regional figures in review.md match this_week.csv exactly, and the sum shown is 412,300. But it never asked the user which figure is correct. It wrote review.md anyway and picked one figure as the basis: review.md says 'The regional numbers are used below, since they are the only ones that can be broken down by region', and the revenue-per-order row and the observations are built on the regional sum. The final reply says 'Someone should confirm with finance which figure is correct before you send it.' That passes the check to a third party after the fact. It is not a question to the user, and it is not a pause before any choice was made. So the 'no adjusting' part holds, but the 'asks' and 'without choosing one' parts fail."
+        }
+      ],
+      "notes": [],
+      "eval_name": "flag-total-mismatch"
+    },
+    {
+      "eval_id": 4,
+      "configuration": "without_skill",
+      "run_number": 2,
+      "result": {
+        "pass_rate": 0.3333,
+        "passed": 1,
+        "failed": 2,
+        "total": 3,
+        "time_seconds": 24.4,
+        "tokens": 137160,
+        "tool_calls": 3,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the totals do not reconcile and Claude should stop",
+          "passed": false,
+          "evidence": "[deterministic:file_absent] review.md was written"
+        },
+        {
+          "text": "Claude's questions or final reply quote both revenue figures, 412,300 and 418,900",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['412,300', '418,900'] found in ['final_response.md']"
+        },
+        {
+          "text": "Claude asks which revenue figure is correct without choosing one or adjusting a region to make the totals agree",
+          "passed": false,
+          "evidence": "[llm-grader] Claude did not adjust any region (regional rows match this_week.csv exactly), but it did choose a figure and did not ask a question. review.md states: 'Revenue figures below use the regional sum (\u00a3412,300) so the region and total rows add up.' The headline table uses 412,300 as this week's revenue. The final reply says 'I used the regional sum...' and 'I don't know which number is right', then 'confirm it with finance'. That is a recommendation to check, not a question to the user about which figure is correct, and it was made after Claude had already picked one and shipped review.md."
+        }
+      ],
+      "notes": [],
+      "eval_name": "flag-total-mismatch"
+    },
+    {
+      "eval_id": 4,
+      "configuration": "without_skill",
+      "run_number": 3,
+      "result": {
+        "pass_rate": 0.3333,
+        "passed": 1,
+        "failed": 2,
+        "total": 3,
+        "time_seconds": 33.4,
+        "tokens": 244164,
+        "tool_calls": 6,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "No review.md was written, because the totals do not reconcile and Claude should stop",
+          "passed": false,
+          "evidence": "[deterministic:file_absent] review.md was written"
+        },
+        {
+          "text": "Claude's questions or final reply quote both revenue figures, 412,300 and 418,900",
+          "passed": true,
+          "evidence": "[deterministic:text_mentions] All of ['412,300', '418,900'] found in ['final_response.md']"
+        },
+        {
+          "text": "Claude asks which revenue figure is correct without choosing one or adjusting a region to make the totals agree",
+          "passed": false,
+          "evidence": "[llm-grader] Claude did not adjust any region; the regional rows match this_week.csv exactly. But it did choose a figure and did not ask the user anything. review.md line 12: 'The revenue figures below use the regional sum, because it is the only version with a regional breakdown.' The headline table reports Revenue 412,300* / -10.8%*. The final reply says 'uses the regional sum for revenue... finance should confirm which number is right.' That hands the question to finance in the document. It is not a question to the user, and it comes after review.md was already finished with the regional sum as the primary figure. Claude never stopped to ask which figure to use before producing the deliverable."
+        }
+      ],
+      "notes": [],
+      "eval_name": "flag-total-mismatch"
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 16.5667,
+        "stddev": 1.3773,
+        "min": 14.6,
+        "max": 19.0
+      },
+      "tokens": {
+        "mean": 149085.9167,
+        "stddev": 16614.8272,
+        "min": 139342,
+        "max": 178309
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.5472,
+        "stddev": 0.229,
+        "min": 0.3333,
+        "max": 0.8333
+      },
+      "time_seconds": {
+        "mean": 28.5667,
+        "stddev": 3.7582,
+        "min": 21.7,
+        "max": 33.4
+      },
+      "tokens": {
+        "mean": 196751.0833,
+        "stddev": 38629.5674,
+        "min": 135806,
+        "max": 249379
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.45",
+      "time_seconds": "-12.0",
+      "tokens": "-47665"
+    }
+  },
+  "notes": [],
+  "trigger_eval": {
+    "runs_per_query": 3,
+    "summary": {
+      "total": 6,
+      "passed": 3,
+      "failed": 3
+    },
+    "should_trigger_rate": 0.1111,
+    "should_not_trigger_rate": 0.0,
+    "results": [
+      {
+        "query": "it's monday and I need the weekly metrics review for the leadership sync. this_week.csv and last_week.csv are in ~/kpi_exports/ along with reported_totals.csv from finance (regional orders, revenue_gbp, active_customers). can you build the tables and pull out the focus areas?",
+        "should_trigger": true,
+        "trigger_rate": 0.3333333333333333,
+        "triggers": 1,
+        "runs": 3,
+        "pass": false
+      },
+      {
+        "query": "Can you prep this week's regional KPI pack? Compare this week vs last week for North America, EMEA, APAC and LATAM, make sure it ties out to finance's reported totals, and give me the 2-3 things leadership should focus on.",
+        "should_trigger": true,
+        "trigger_rate": 0.0,
+        "triggers": 0,
+        "runs": 3,
+        "pass": false
+      },
+      {
+        "query": "before the 9am ops review I want the week-over-week numbers by region double-checked against the finance totals and written up. files are in data/week41/. if anything doesn't add up tell me rather than guessing",
+        "should_trigger": true,
+        "trigger_rate": 0.0,
+        "triggers": 0,
+        "runs": 3,
+        "pass": false
+      },
+      {
+        "query": "draft my weekly status update for the data platform team from these notes: shipped the dbt migration, on-call was quiet, risk is the Q4 hiring freeze, next week we start the warehouse cost review. use our usual highlights / risks / next steps format",
+        "should_trigger": false,
+        "trigger_rate": 0.0,
+        "triggers": 0,
+        "runs": 3,
+        "pass": true
+      },
+      {
+        "query": "I've got weekly_revenue_by_region.csv going back 26 weeks. Make me a stacked area chart by region with a 4-week rolling average line on top that I can paste into the board deck",
+        "should_trigger": false,
+        "trigger_rate": 0.0,
+        "triggers": 0,
+        "runs": 3,
+        "pass": true
+      },
+      {
+        "query": "write a snowflake query over analytics.orders that rolls up to ISO week and region and computes week-over-week % change in revenue and distinct customers, with the current week excluded since it's partial",
+        "should_trigger": false,
+        "trigger_rate": 0.0,
+        "triggers": 0,
+        "runs": 3,
+        "pass": true
+      }
+    ],
+    "error": null
+  }
+}

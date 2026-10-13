@@ -1,0 +1,8 @@
+Evaluating: Prepares the Monday weekly metrics review — regional tables (this week vs last week, week-over-week %) reconciled to the reported company totals, plus 2-3 focus areas for leadership. Use this whenever someone asks for the weekly metrics review, the Monday KPI pack, regional week-over-week numbers, or wants this week's metrics checked against finance totals and written up, even if they just say "prep the numbers for the leadership sync". It never guesses a number — when a region is missing or totals don't reconcile it stops and asks. Not for narrative status updates from notes, charts or dashboards, or writing SQL.
+Results: 3/6 passed
+  [FAIL] rate=1/3 expected=True: it's monday and I need the weekly metrics review for the leadership sy
+  [FAIL] rate=0/3 expected=True: Can you prep this week's regional KPI pack? Compare this week vs last 
+  [FAIL] rate=0/3 expected=True: before the 9am ops review I want the week-over-week numbers by region 
+  [PASS] rate=0/3 expected=False: draft my weekly status update for the data platform team from these no
+  [PASS] rate=0/3 expected=False: I've got weekly_revenue_by_region.csv going back 26 weeks. Make me a s
+  [PASS] rate=0/3 expected=False: write a snowflake query over analytics.orders that rolls up to ISO wee

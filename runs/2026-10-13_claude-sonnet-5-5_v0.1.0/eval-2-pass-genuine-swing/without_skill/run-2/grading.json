@@ -1,0 +1,111 @@
+{
+  "expectations": [
+    {
+      "text": "review.md exists in the outputs",
+      "passed": true,
+      "evidence": "[deterministic:file_exists] review.md found in outputs"
+    },
+    {
+      "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+      "passed": true,
+      "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+    },
+    {
+      "text": "The Total row matches the this_week values in reported_totals.csv",
+      "passed": false,
+      "evidence": "[deterministic:total_row_matches] No table row labelled 'Total'"
+    },
+    {
+      "text": "No questions.md was written, because the data reconciles and Claude should not stop",
+      "passed": true,
+      "evidence": "[deterministic:file_absent] questions.md absent"
+    },
+    {
+      "text": "The Focus areas section mentions APAC",
+      "passed": false,
+      "evidence": "[deterministic:section_mentions] No section headed 'Focus areas'"
+    },
+    {
+      "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+      "passed": true,
+      "evidence": "[llm-grader] review.md's APAC section opens: 'The APAC team has confirmed the numbers are real, so this is a genuine swing and not a data issue.' It gives correct figures: orders 2,140\u21922,890 (+35.0%, +750), revenue \u00a388,300\u2192\u00a3121,900 (+38.1%, +\u00a333,600), active customers 7,910\u21929,120 (+15.3%, +1,210), a 91% share of the \u00a337,100 revenue increase, and AOV \u00a341.3\u2192\u00a342.2. I recomputed all of these from the CSVs and they are correct. The review does not claim a cause. Under Open questions it asks 'What caused the APAC jump? The confirmation says the numbers are real, but not why', and the possible causes it lists (campaign, launch, seasonal event, one-off) are offered as things to check, not as findings. The only interpretive lines are descriptions of the data itself: 'growth comes from both volume and breadth' and 'AOV stable... so this isn't a few large orders'."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 2,
+    "total": 6,
+    "pass_rate": 0.6667
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Bash": 3,
+      "Write": 1
+    },
+    "total_tool_calls": 4,
+    "total_steps": 5,
+    "files_created": [
+      "review.md"
+    ],
+    "errors_encountered": 0,
+    "output_chars": 2604,
+    "transcript_chars": 8307,
+    "skills_invoked": [],
+    "skill_used": false
+  },
+  "claims": [
+    {
+      "claim": "APAC accounts for \u00a333,600 of the \u00a337,100 revenue increase (about 91%)",
+      "type": "factual",
+      "verified": true,
+      "evidence": "121,900-88,300=33,600; 499,400-462,300=37,100; 33,600/37,100=90.6%"
+    },
+    {
+      "claim": "Without APAC, revenue is up about 1.0% (\u00a33,500 on \u00a3374,000)",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Non-APAC revenue goes from 374,000 to 377,500, an increase of 3,500 (+0.94%)"
+    },
+    {
+      "claim": "APAC's share of revenue rose from 19.1% to 24.4%",
+      "type": "factual",
+      "verified": true,
+      "evidence": "88,300/462,300=19.1%; 121,900/499,400=24.4%"
+    },
+    {
+      "claim": "Orders per active customer in APAC rose from 0.27 to 0.32",
+      "type": "factual",
+      "verified": true,
+      "evidence": "2,140/7,910=0.271; 2,890/9,120=0.317"
+    },
+    {
+      "claim": "The reported totals reconcile with the regional sums",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Regional sums are 10,890/11,755 orders, 462,300/499,400 revenue and 39,580/40,960 active customers, which match reported_totals.csv"
+    },
+    {
+      "claim": "Final response: 'I didn't know the cause, so I haven't said anything about it'",
+      "type": "process",
+      "verified": true,
+      "evidence": "Mostly accurate. The review lists candidate causes, but only inside an open question, so it does not assert a cause."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+        "reason": "This one assertion checks three things: that APAC is treated as real, that its figures are included, and that no cause is invented. The 'without inventing a cause' part needs judgment. Listing speculative causes as open questions (as this output does) sits close to the line. Consider saying explicitly whether naming candidate causes as questions to investigate is acceptable, so graders stay consistent."
+      },
+      {
+        "reason": "The deterministic checks fail on section names ('Total' row, 'Focus areas' heading) that the prompt never asked for. This without-skill output reconciles totals correctly in a separate Reconciliation table and covers APAC in depth. Those failures measure whether the output follows the skill's format, not whether the work is correct. That is fine for a baseline comparison, but keep it in mind when reading the pass rates."
+      }
+    ],
+    "overall": "The output clearly satisfies the graded assertion. The main problem is that the assertion bundles several criteria, and its 'no invented cause' boundary is not defined precisely."
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "expectations": [
+    {
+      "text": "review.md exists in the outputs",
+      "passed": true,
+      "evidence": "[deterministic:file_exists] review.md found in outputs"
+    },
+    {
+      "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+      "passed": true,
+      "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+    },
+    {
+      "text": "The Total row matches the this_week values in reported_totals.csv",
+      "passed": true,
+      "evidence": "[deterministic:total_row_matches] Total row matches reported_totals.csv (this_week)"
+    },
+    {
+      "text": "No questions.md was written, because the data is clean and Claude should not stop",
+      "passed": true,
+      "evidence": "[deterministic:file_absent] questions.md absent"
+    },
+    {
+      "text": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+      "passed": true,
+      "evidence": "[llm-grader] All three focus-area bullets in review.md give before\u2192after figures that match the input CSVs: EMEA orders 3,580\u21923,490 (-2.5%), revenue 152,900\u2192149,800 (-2.0%), customers 12,870\u219212,790 (-0.6%); LATAM orders 960\u21921,010 (+5.2%), revenue 34,700\u219236,100 (+4.0%); APAC orders 2,140\u21922,230 (+4.2%), revenue 88,300\u219291,600 (+3.7%); North America orders +145 (4,210\u21924,355), revenue +4,800 (186,400\u2192191,200). I recomputed every percentage from last_week.csv/this_week.csv and all are correct to one decimal place. No bullet gives a reason for any movement (no seasonality, campaigns, FX, churn and so on). The descriptive comparisons ('only region down', 'grew fastest' on orders/revenue, 'added the most volume', 'most of the company-level increase', i.e. 4,800 of 6,400 = 75%) all hold against the data. The executor also said explicitly: 'the focus areas say what moved but not why, because I wasn't given any reasons.'"
+    }
+  ],
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "total": 5,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Skill": 1,
+      "Bash": 1,
+      "Write": 1
+    },
+    "total_tool_calls": 3,
+    "total_steps": 5,
+    "files_created": [
+      "review.md"
+    ],
+    "errors_encountered": 0,
+    "output_chars": 1293,
+    "transcript_chars": 7032,
+    "skills_invoked": [
+      "weekly-metrics-review"
+    ],
+    "skill_used": true
+  },
+  "claims": [
+    {
+      "claim": "EMEA is the only region down",
+      "type": "factual",
+      "verified": true,
+      "evidence": "EMEA is the only region with a negative WoW change on all three metrics. Every other region is up on every metric."
+    },
+    {
+      "claim": "LATAM and APAC grew fastest",
+      "type": "factual",
+      "verified": true,
+      "evidence": "This holds for orders (5.2%, 4.2% vs NA 3.4%) and revenue (4.0%, 3.7% vs NA 2.6%), the metrics the bullet cites. On active customers APAC (+1.6%) is below NA (+1.9%), but the bullet does not claim that metric."
+    },
+    {
+      "claim": "North America contributed most of the company-level increase",
+      "type": "factual",
+      "verified": true,
+      "evidence": "NA accounts for +4,800 of the +6,400 revenue increase (75%) and +145 of the +195 order increase (74%)."
+    },
+    {
+      "claim": "Total WoW: orders +1.8%, revenue +1.4%, customers +1.0%",
+      "type": "factual",
+      "verified": true,
+      "evidence": "11085/10890 = +1.79%, 468700/462300 = +1.38%, 39995/39580 = +1.05%."
+    },
+    {
+      "claim": "Regional sums match reported_totals.csv for both weeks",
+      "type": "process",
+      "verified": true,
+      "evidence": "The reconcile.py output shows reconciles: true for all six checks."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "The week label 'week of 13 Oct 2026' was assumed because the files don't give one."
+    ],
+    "needs_review": [],
+    "workarounds": [
+      "The executor computed the Total-row WoW percentages by hand because the reconcile script doesn't output them."
+    ]
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+        "reason": "This assertion combines two checks: citing figures and not inventing causes. It also doesn't check that the cited figures are correct or that comparative claims ('fastest', 'only region down') are true. A deterministic check could extract the numbers from the focus-area bullets and confirm each one appears in, or can be derived from, the input CSVs. The LLM check could then focus only on whether any causes were invented."
+      },
+      {
+        "reason": "The deterministic table check covers regional rows and Total values, but not the Total-row WoW percentages, which the executor computed by hand outside the script. Add a check that those percentages match totals recomputed from reported_totals.csv."
+      }
+    ],
+    "overall": "The assertion is reasonable and this run clearly passes it. The 'no invented causes' half is the discriminating part. The 'cites figures' half would also pass with wrong numbers, so it's worth backing with a deterministic check."
+  }
+}

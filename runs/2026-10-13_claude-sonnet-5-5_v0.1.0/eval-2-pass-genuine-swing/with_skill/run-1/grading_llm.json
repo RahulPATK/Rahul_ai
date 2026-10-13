@@ -1,0 +1,88 @@
+{
+  "expectations": [
+    {
+      "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+      "passed": true,
+      "evidence": "review.md Focus areas: 'APAC is the main mover. Orders rose from 2,140 to 2,890 (+35.0%), revenue from 88,300 to 121,900 GBP (+38.1%), and active customers from 7,910 to 9,120 (+15.3%). The APAC team has confirmed these figures are real.' It is presented as a genuine movement (no data-error hedging), the before/after figures match last_week.csv and this_week.csv, and the percentages check out (750/2140=35.0%, 33600/88300=38.1%, 1210/7910=15.3%). No cause is given anywhere in review.md (no mention of campaigns, launches, seasonality, etc.); the only attribution is arithmetic ('APAC accounts for 33,600 of' the 37,100 GBP rise, which is correct). The final response explicitly says: 'The review gives no reason for the APAC jump, because none was in the files or in what you told me.' The 'confirmed real' statement comes from the user's prompt, so it is not invented."
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "total": 1,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Skill": 1,
+      "Bash": 1,
+      "Write": 1
+    },
+    "total_tool_calls": 3,
+    "total_steps": 5,
+    "errors_encountered": 0,
+    "output_chars": 1359,
+    "transcript_chars": 7149
+  },
+  "timing": {
+    "executor_duration_seconds": 15.3,
+    "total_duration_seconds": 15.3
+  },
+  "claims": [
+    {
+      "claim": "Revenue is up 37,100 GBP WoW (462,300 to 499,400); APAC accounts for 33,600",
+      "type": "factual",
+      "verified": true,
+      "evidence": "499400-462300=37100; 121900-88300=33600"
+    },
+    {
+      "claim": "Orders are up 865 (10,890 to 11,755); APAC accounts for 750",
+      "type": "factual",
+      "verified": true,
+      "evidence": "11755-10890=865; 2890-2140=750"
+    },
+    {
+      "claim": "Total WoW: orders +7.9%, revenue +8.0%, active customers +3.5%",
+      "type": "factual",
+      "verified": true,
+      "evidence": "865/10890=7.94%; 37100/462300=8.03%; 1380/39580=3.49%"
+    },
+    {
+      "claim": "Other regions moved +0.8% to +1.7% on orders, +0.9% to +1.4% on revenue, +0.5% to +0.9% on customers",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Matches reconcile.py output for North America, EMEA, LATAM"
+    },
+    {
+      "claim": "Regional sums match reported_totals.csv for both weeks",
+      "type": "process",
+      "verified": true,
+      "evidence": "reconcile.py output shows reconciles: true for all metrics, both weeks; status ok, no issues"
+    },
+    {
+      "claim": "Week label 'week of 2026-10-13' derived from today's date",
+      "type": "process",
+      "verified": true,
+      "evidence": "Input files carry no week label; executor flagged this assumption in its final response"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "No user_notes.md present. The final response flags that the week label was inferred from today's date."
+    ],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+        "reason": "This combines three checks: framed as real, figures present, no invented cause. 'Figures' is vague. If the before/after values or WoW percentages were wrong, a grader could still pass it. Consider a deterministic check that the APAC WoW percentages (35.0/38.1/15.3) appear, or that the stated APAC contribution to the total delta (33,600 / 750) is arithmetically correct."
+      },
+      {
+        "reason": "No assertion checks that the review avoids hedging the APAC swing as a possible data error or anomaly to investigate, even though the user confirmed it was real. That is the main failure mode in this 'genuine swing' scenario, and only the 'reported as real' wording covers it implicitly."
+      }
+    ],
+    "overall": "The eval is reasonable. The deterministic checks cover table accuracy well. The LLM assertion fits the key behavior but could be split, so that over-hedging and arithmetic errors are caught separately."
+  }
+}

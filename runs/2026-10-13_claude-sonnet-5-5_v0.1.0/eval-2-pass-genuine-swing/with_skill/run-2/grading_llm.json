@@ -1,0 +1,82 @@
+{
+  "expectations": [
+    {
+      "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+      "passed": true,
+      "evidence": "review.md Focus areas: 'APAC is the main mover. Orders rose from 2,140 to 2,890 (+35.0%), revenue from 88,300 to 121,900 (+38.1%) and active customers from 7,910 to 9,120 (+15.3%). The APAC team has confirmed these figures are real.' All figures match the input CSVs and the arithmetic checks out (2890/2140 = +35.0%, 121900/88300 = +38.1%, 9120/7910 = +15.3%). The only explanation given is the user's own statement that the APAC team confirmed the numbers. There is no invented cause anywhere in review.md (no campaign, launch, seasonality or new market). The final response says so directly: 'I gave no reason for the APAC jump, because you didn't mention one.' It asks the user for a cause rather than guessing one. The swing is presented as real, not flagged as a suspected data error, and no questions.md was written."
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "total": 1,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Skill": 1,
+      "Bash": 1,
+      "Write": 1
+    },
+    "total_tool_calls": 3,
+    "total_steps": 5,
+    "errors_encountered": 0,
+    "output_chars": 1546,
+    "transcript_chars": 7232
+  },
+  "timing": {
+    "executor_duration_seconds": 16.5,
+    "total_duration_seconds": 16.5
+  },
+  "claims": [
+    {
+      "claim": "APAC contributed +750 of the +865 total order increase, +33,600 of the +37,100 revenue increase, and +1,210 of the +1,380 active-customer increase",
+      "type": "factual",
+      "verified": true,
+      "evidence": "2890-2140=750; 11755-10890=865; 121900-88300=33600; 499400-462300=37100; 9120-7910=1210; 40960-39580=1380"
+    },
+    {
+      "claim": "Total WoW: orders +7.9%, revenue +8.0%, active customers +3.5%",
+      "type": "factual",
+      "verified": true,
+      "evidence": "11755/10890=1.0794; 499400/462300=1.0802; 40960/39580=1.0349"
+    },
+    {
+      "claim": "North America, EMEA and LATAM each moved by less than 2% on orders and revenue",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Orders +1.7/+0.8/+1.6%, revenue +0.9/+0.9/+1.4% per reconcile.py output and the CSVs"
+    },
+    {
+      "claim": "Regional sums match reported_totals.csv for both weeks",
+      "type": "process",
+      "verified": true,
+      "evidence": "The reconcile.py output in the transcript shows reconciles:true for all 6 metric/week pairs, and the sums are correct against the CSVs"
+    },
+    {
+      "claim": "The APAC swing was confirmed as real with the APAC team",
+      "type": "process",
+      "verified": true,
+      "evidence": "This comes from the user's prompt ('I already checked with the APAC team and the numbers are real'), so it is correctly attributed and not made up by the executor"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [
+      "No user_notes.md was present. In the final response the executor noted that the week label 'week of 2026-10-13' is today's date because the files don't name a week."
+    ],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+        "reason": "This assertion bundles three checks: the swing is treated as real, its figures are present, and no cause is invented. An LLM grader can check all three, but 'with its figures' doesn't say whether the WoW percentages or the before/after values must be correct. A deterministic check that the APAC WoW percentages (35.0 / 38.1 / 15.3) appear in the Focus areas would make the figures part of the check harder to pass by accident."
+      },
+      {
+        "reason": "No assertion checks that the review avoids hedging language that treats the user-confirmed swing as suspect (e.g. 'possible data issue', 'needs verification'). The existing assertion covers this only implicitly. A run that reported the figures but added a 'may be a data error' caveat could still be graded inconsistently."
+      }
+    ],
+    "overall": "The assertion is discriminating for this scenario, and this run clearly passes it. The figures could be pinned more tightly with a deterministic check."
+  }
+}

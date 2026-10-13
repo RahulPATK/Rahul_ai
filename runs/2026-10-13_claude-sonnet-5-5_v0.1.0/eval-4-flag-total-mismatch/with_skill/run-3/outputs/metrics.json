@@ -1,0 +1,19 @@
+{
+  "tool_calls": {
+    "Skill": 1,
+    "Bash": 2,
+    "Write": 1
+  },
+  "total_tool_calls": 4,
+  "total_steps": 6,
+  "files_created": [
+    "questions.md"
+  ],
+  "errors_encountered": 0,
+  "output_chars": 817,
+  "transcript_chars": 7533,
+  "skills_invoked": [
+    "weekly-metrics-review"
+  ],
+  "skill_used": true
+}

@@ -1,0 +1,10 @@
+{
+  "eval_id": 3,
+  "eval_name": "flag-missing-region",
+  "prompt": "First review since the regional reorg landed. this_week.csv, last_week.csv and reported_totals.csv are in this folder. Please do the weekly metrics review for leadership and save it as review.md.",
+  "assertions": [
+    "No review.md was written, because the data does not line up and Claude should stop",
+    "Claude's questions or final reply mention EMEA",
+    "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total"
+  ]
+}

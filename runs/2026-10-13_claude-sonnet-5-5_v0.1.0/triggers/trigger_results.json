@@ -1,0 +1,59 @@
+{
+  "skill_name": "weekly-metrics-review",
+  "description": "Prepares the Monday weekly metrics review \u2014 regional tables (this week vs last week, week-over-week %) reconciled to the reported company totals, plus 2-3 focus areas for leadership. Use this whenever someone asks for the weekly metrics review, the Monday KPI pack, regional week-over-week numbers, or wants this week's metrics checked against finance totals and written up, even if they just say \"prep the numbers for the leadership sync\". It never guesses a number \u2014 when a region is missing or totals don't reconcile it stops and asks. Not for narrative status updates from notes, charts or dashboards, or writing SQL.",
+  "results": [
+    {
+      "query": "it's monday and I need the weekly metrics review for the leadership sync. this_week.csv and last_week.csv are in ~/kpi_exports/ along with reported_totals.csv from finance (regional orders, revenue_gbp, active_customers). can you build the tables and pull out the focus areas?",
+      "should_trigger": true,
+      "trigger_rate": 0.3333333333333333,
+      "triggers": 1,
+      "runs": 3,
+      "pass": false
+    },
+    {
+      "query": "Can you prep this week's regional KPI pack? Compare this week vs last week for North America, EMEA, APAC and LATAM, make sure it ties out to finance's reported totals, and give me the 2-3 things leadership should focus on.",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": false
+    },
+    {
+      "query": "before the 9am ops review I want the week-over-week numbers by region double-checked against the finance totals and written up. files are in data/week41/. if anything doesn't add up tell me rather than guessing",
+      "should_trigger": true,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": false
+    },
+    {
+      "query": "draft my weekly status update for the data platform team from these notes: shipped the dbt migration, on-call was quiet, risk is the Q4 hiring freeze, next week we start the warehouse cost review. use our usual highlights / risks / next steps format",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": true
+    },
+    {
+      "query": "I've got weekly_revenue_by_region.csv going back 26 weeks. Make me a stacked area chart by region with a 4-week rolling average line on top that I can paste into the board deck",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": true
+    },
+    {
+      "query": "write a snowflake query over analytics.orders that rolls up to ISO week and region and computes week-over-week % change in revenue and distinct customers, with the current week excluded since it's partial",
+      "should_trigger": false,
+      "trigger_rate": 0.0,
+      "triggers": 0,
+      "runs": 3,
+      "pass": true
+    }
+  ],
+  "summary": {
+    "total": 6,
+    "passed": 3,
+    "failed": 3
+  }
+}

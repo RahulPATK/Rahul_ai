@@ -23,6 +23,7 @@ Usage:
 
     --dry-run   print the plan and call counts; no model calls
     --offline   exercise the whole pipeline with canned outputs; no model calls
+    --regrade <run folder>   re-run deterministic checks on an existing run; no model calls
 """
 
 import argparse
@@ -372,7 +373,40 @@ def aggregate(run_dir: Path, skill_name: str, skill_snapshot: Path, model: str,
             "error": triggers.get("error"),
         }
     path.write_text(json.dumps(bench, indent=2))
+    sys.path.insert(0, str(SKILL_CREATOR))
+    from scripts.aggregate_benchmark import generate_markdown  # skill-creator's own formatter
+    (run_dir / "benchmark.md").write_text(generate_markdown(bench))
     return path
+
+
+def regrade(run_dir: Path, args, env: dict) -> None:
+    """Re-run deterministic checks on an existing run and re-aggregate. No model calls:
+    LLM-graded verdicts are kept from the existing grading.json."""
+    cfg = json.loads((run_dir / "run_config.json").read_text())
+    evals = json.loads((args.subject / "evals.json").read_text())
+    cases = {c["id"]: c for c in evals["evals"]}
+    for meta in sorted(run_dir.glob("eval-*/eval_metadata.json")):
+        case = cases[json.loads(meta.read_text())["eval_id"]]
+        for rd in sorted(meta.parent.glob("*/run-*")):
+            old = json.loads((rd / "grading.json").read_text())
+            llm = {"expectations": [e for e in old["expectations"] if e["evidence"].startswith("[llm-grader]")]}
+            for e in llm["expectations"]:
+                e["evidence"] = e["evidence"].removeprefix("[llm-grader] ")
+            for key in ("claims", "user_notes_summary", "eval_feedback"):
+                if key in old:
+                    llm[key] = old[key]
+            decided = deterministic(case, rd / "outputs", rd / "work" / ".inputs")
+            grading = merge_grading(case, decided, llm, old.get("execution_metrics", {}))
+            (rd / "grading.json").write_text(json.dumps(grading, indent=2))
+            s = grading["summary"]
+            print(f"  {case['name']:<22} {rd.parent.name:<14} {rd.name}  {s['passed']}/{s['total']}")
+    trig = run_dir / "triggers" / "trigger_results.json"
+    triggers = json.loads(trig.read_text()) if trig.exists() else None
+    args.runs, args.trigger_runs = cfg["runs"], cfg.get("trigger_runs") or args.trigger_runs
+    args.grader_model, args.offline = cfg["grader_model"], cfg.get("offline", False)
+    bench = aggregate(run_dir, cfg["skill"], run_dir / "skill-snapshot", cfg["model"], cfg["skill_version"],
+                      list(cases.values()), triggers, args, env)
+    print(f"  benchmark: {bench.relative_to(REPO)}")
 
 
 def _mean(xs):
@@ -384,7 +418,8 @@ def _mean(xs):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--subject", required=True, type=Path, help="subjects/<skill> folder with evals.json")
-    ap.add_argument("--models", required=True, nargs="+", help="model IDs to test")
+    ap.add_argument("--models", nargs="+", help="model IDs to test")
+    ap.add_argument("--regrade", type=Path, help="re-run deterministic checks on this run folder; no model calls")
     ap.add_argument("--runs", type=int, default=3, help="repeats per case and configuration")
     ap.add_argument("--configs", nargs="+", default=list(CONFIGS), choices=CONFIGS)
     ap.add_argument("--cases", nargs="+", help="only these eval names or ids")
@@ -399,6 +434,11 @@ def main():
     args = ap.parse_args()
 
     args.subject = args.subject.resolve()
+    if args.regrade:
+        regrade(args.regrade.resolve(), args, {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
+        return
+    if not args.models:
+        ap.error("--models is required unless --regrade is given")
     evals = json.loads((args.subject / "evals.json").read_text())
     skill_dir = args.subject / evals.get("skill_path", "skill")
     skill_name, version = parse_frontmatter(skill_dir / "SKILL.md")

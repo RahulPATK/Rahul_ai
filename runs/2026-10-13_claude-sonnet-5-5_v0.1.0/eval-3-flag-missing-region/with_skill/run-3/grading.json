@@ -1,0 +1,89 @@
+{
+  "expectations": [
+    {
+      "text": "No review.md was written, because the data does not line up and Claude should stop",
+      "passed": true,
+      "evidence": "[deterministic:file_absent] review.md absent"
+    },
+    {
+      "text": "Claude's questions or final reply mention EMEA",
+      "passed": true,
+      "evidence": "[deterministic:text_mentions] All of ['EMEA'] found in ['questions.md', 'final_response.md']"
+    },
+    {
+      "text": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+      "passed": true,
+      "evidence": "[llm-grader] questions.md asks: 'Was EMEA merged into another region in the reorg, or is this week's EMEA extract missing?', with follow-ups for each case (which region absorbed it plus a restatement of last week on the new structure; or send the missing EMEA row). It states 'I haven't written review.md or a company total, and I haven't estimated any EMEA figure.' The final reply says the same. No EMEA this-week number appears anywhere. The ~30%/~31% company-level drop does appear, but only as a warning that comparing the totals as they stand would produce a misleading drop ('That drop would be an artifact of the missing region'). It is not given as a reported WoW result, and no per-region WoW figures or company-total review was delivered."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "total": 3,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Skill": 1,
+      "Bash": 3,
+      "Write": 1
+    },
+    "total_tool_calls": 5,
+    "total_steps": 7,
+    "files_created": [
+      "questions.md"
+    ],
+    "errors_encountered": 0,
+    "output_chars": 1227,
+    "transcript_chars": 7384,
+    "skills_invoked": [
+      "weekly-metrics-review"
+    ],
+    "skill_used": true
+  },
+  "claims": [
+    {
+      "claim": "last_week.csv has EMEA at 3,580 orders, 152,900 GBP revenue, 12,870 active customers",
+      "type": "factual",
+      "verified": true,
+      "evidence": "The last_week.csv row reads 'EMEA,3580,152900,12870'"
+    },
+    {
+      "claim": "Reported this-week totals (7,600 / 319,100 / 27,200) equal the sum of NA, APAC and LATAM",
+      "type": "factual",
+      "verified": true,
+      "evidence": "4390+2210+1000=7600; 192800+90400+35900=319100; 15660+8000+3540=27200. This matches reported_totals.csv and the reconcile.py output."
+    },
+    {
+      "claim": "Company total would fall about 30% in orders and about 31% in revenue if compared as-is",
+      "type": "factual",
+      "verified": true,
+      "evidence": "7600/10890 = -30.2% and 319100/462300 = -31.0%"
+    },
+    {
+      "claim": "No EMEA figure was estimated and no review.md was written",
+      "type": "process",
+      "verified": true,
+      "evidence": "The only output files are questions.md and final_response.md, and neither has an imputed EMEA value"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": [
+      "The first Bash call, a for-loop over the CSVs, was blocked by the sandbox. The executor re-ran it as a plain cat with no problems."
+    ]
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+        "reason": "The words 'presenting a week-over-week company total' are open to interpretation. This run quoted the ~30% company-level drop as a caveat (an artifact of the missing region), not as a result, and I passed it. A stricter grader could fail it. Say whether quoting the misleading delta as a warning is acceptable, so grading stays consistent across runs."
+      },
+      {
+        "reason": "Nothing checks whether Claude notices that reported_totals.csv also leaves EMEA out this week, so the totals 'reconcile' while hiding the gap. This run caught it, and that is the key insight a weaker run could miss. Consider asserting that the questions point out the reported totals exclude EMEA, or that the totals reconcile only because EMEA is missing from both."
+      }
+    ],
+    "overall": "The assertion discriminates well and is backed by the deterministic file_absent check. The main gap is that the 'company total' clause is ambiguous."
+  }
+}

@@ -11,9 +11,9 @@ Each check in evals.json names the expectation it decides plus a `type`:
                        the markdown section whose heading starts with `section`
                        contains every term
   table_rows_match_csv {"path", "csv", "key"}
-                       for every row of the input CSV, the markdown table row whose
-                       first cell equals the row's `key` value contains each of the
-                       row's numeric values exactly
+                       for every row of the input CSV, the markdown table rows whose
+                       first cell equals the row's `key` value (across all tables)
+                       contain each of the row's numeric values exactly
   total_row_matches    {"path", "csv", "column", "row_label"}
                        the table row labelled `row_label` contains every value in
                        `column` of the input CSV (metric, value per row)
@@ -120,7 +120,11 @@ def run_check(check: dict, outputs: Path, inputs: Path) -> tuple[bool, str]:
     rows = table_rows(review)
     if not rows:
         return False, f"No markdown table in {check['path']}"
-    by_label = {label(r[0]): r for r in rows if r}
+    # A label can appear in several tables (e.g. one table per metric): pool its numbers.
+    by_label: dict[str, set[float]] = {}
+    for r in rows:
+        if r:
+            by_label.setdefault(label(r[0]), set()).update(row_numbers(r))
 
     with open(inputs / check["csv"], newline="") as f:
         source = list(csv.DictReader(f))
@@ -129,11 +133,10 @@ def run_check(check: dict, outputs: Path, inputs: Path) -> tuple[bool, str]:
         problems = []
         for src in source:
             key = src[check["key"]].strip()
-            row = by_label.get(key.lower())
-            if row is None:
+            have = by_label.get(key.lower())
+            if have is None:
                 problems.append(f"no table row for {key}")
                 continue
-            have = row_numbers(row)
             for col, val in src.items():
                 n = to_number(val) if col != check["key"] else None
                 if n is not None and n not in have:
@@ -143,10 +146,9 @@ def run_check(check: dict, outputs: Path, inputs: Path) -> tuple[bool, str]:
         return True, f"All {len(source)} rows of {check['csv']} match the table exactly"
 
     if kind == "total_row_matches":
-        row = by_label.get(check["row_label"].lower())
-        if row is None:
+        have = by_label.get(check["row_label"].lower())
+        if have is None:
             return False, f"No table row labelled '{check['row_label']}'"
-        have = row_numbers(row)
         want = {r["metric"]: to_number(r[check["column"]]) for r in source}
         wrong = [f"{m}: expected {fmt(v)}" for m, v in want.items() if v is not None and v not in have]
         if wrong:

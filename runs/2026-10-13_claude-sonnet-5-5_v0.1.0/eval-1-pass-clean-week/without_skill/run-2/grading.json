@@ -1,0 +1,103 @@
+{
+  "expectations": [
+    {
+      "text": "review.md exists in the outputs",
+      "passed": true,
+      "evidence": "[deterministic:file_exists] review.md found in outputs"
+    },
+    {
+      "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+      "passed": true,
+      "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+    },
+    {
+      "text": "The Total row matches the this_week values in reported_totals.csv",
+      "passed": false,
+      "evidence": "[deterministic:total_row_matches] No table row labelled 'Total'"
+    },
+    {
+      "text": "No questions.md was written, because the data is clean and Claude should not stop",
+      "passed": true,
+      "evidence": "[deterministic:file_absent] questions.md absent"
+    },
+    {
+      "text": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+      "passed": true,
+      "evidence": "[llm-grader] review.md has no section called 'Focus areas'. Its 'Key points' section does the same job. Every bullet there cites figures, and I checked each against the CSVs: North America +145 orders / +\u00a34,800 / +290 customers, '~75% of net revenue increase' (4,800/6,400 = 75%); EMEA orders -2.5%, revenue -2.0%, customers -0.6%, and its -\u00a33,100 'offsets most of APAC's gain' (+3,300); LATAM +5.2% orders, +4.0% revenue, 'about 8% of revenue' (36,100/468,700 = 7.7%); AOV \u00a342.45\u2192\u00a342.28, with NA, APAC and LATAM down and EMEA up from \u00a342.71 to \u00a342.92 (all match the computed values). No outside causes are given. For EMEA it says 'The data doesn't say why. Worth asking the EMEA lead', and the caveats say 'The exports have no cause or context (promotions, pricing, seasonality, FX), so the points above describe what changed, not why.' The one explanatory claim, 'growth is coming from order volume, not basket size', is an arithmetic breakdown of the data itself, not a cause from outside it."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 1,
+    "total": 5,
+    "pass_rate": 0.8
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Bash": 5,
+      "Write": 2
+    },
+    "total_tool_calls": 7,
+    "total_steps": 8,
+    "files_created": [
+      "review.md"
+    ],
+    "errors_encountered": 0,
+    "output_chars": 2771,
+    "transcript_chars": 11590,
+    "skills_invoked": [],
+    "skill_used": false
+  },
+  "claims": [
+    {
+      "claim": "Regional rows sum exactly to finance's reported totals for both weeks, on all three metrics",
+      "type": "factual",
+      "verified": true,
+      "evidence": "This week: orders 4355+3490+2230+1010=11085, revenue 191200+149800+91600+36100=468700, customers 15610+12790+8040+3555=39995. Last week: 10890 / 462300 / 39580. All match reported_totals.csv."
+    },
+    {
+      "claim": "North America accounts for about 75% of the net revenue increase",
+      "type": "factual",
+      "verified": true,
+      "evidence": "4,800 / 6,400 = 75%"
+    },
+    {
+      "claim": "EMEA was the only region to decline, on all three metrics",
+      "type": "factual",
+      "verified": true,
+      "evidence": "EMEA moves are -90 orders, -3,100 revenue and -80 customers. Every other region rose on all three."
+    },
+    {
+      "claim": "APAC and LATAM both grew faster than the company average",
+      "type": "factual",
+      "verified": true,
+      "evidence": "On all three metrics: APAC 4.2/3.7/1.6% and LATAM 5.2/4.0/2.2%, against company 1.8/1.4/1.0%."
+    },
+    {
+      "claim": "Regional AOV figures (NA 44.28\u219243.90, EMEA 42.71\u219242.92, APAC 41.26\u219241.08, LATAM 36.15\u219235.74)",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Match the executor's calc.py output, and spot checks hold: 191200/4355=43.90, 149800/3490=42.92."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": [
+      "Inline python heredocs were blocked by the shell's obfuscation check, so the executor wrote the script to the scratchpad and ran it from there."
+    ]
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Focus areas cite figures from the data and do not state causes for the movements that are not in the data",
+        "reason": "The assertion names a 'Focus areas' section, but this output has 'Key points' instead. If the skill requires a section with that name, the assertion should check for it; if not, it should say 'the commentary / key points'. As written, a strict grader could fail a good output, or pass one where the cause-free wording only appears in some other section."
+      },
+      {
+        "assertion": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+        "reason": "The deterministic check failed, but every regional figure in review.md is correct. The review splits the data into one table per metric (Orders, Revenue, Active customers), and the parser seems to expect a single table with orders and revenue_gbp columns. So the check is testing table layout, not correctness. Either state the required table format in the task or skill, or make the checker accept per-metric tables. The same goes for the 'Total' row check: the totals are present, but in the Headline table, not as a row labelled 'Total'."
+      }
+    ],
+    "overall": "The output is accurate and stays within the data. The deterministic failures are format mismatches, not wrong numbers, so this run's score understates how good the output is."
+  }
+}

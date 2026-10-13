@@ -1,0 +1,93 @@
+{
+  "expectations": [
+    {
+      "text": "No review.md was written, because the data does not line up and Claude should stop",
+      "passed": true,
+      "evidence": "[deterministic:file_absent] review.md absent"
+    },
+    {
+      "text": "Claude's questions or final reply mention EMEA",
+      "passed": true,
+      "evidence": "[deterministic:text_mentions] All of ['EMEA'] found in ['questions.md', 'final_response.md']"
+    },
+    {
+      "text": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+      "passed": true,
+      "evidence": "[llm-grader] questions.md and the final reply both ask: 'Was EMEA merged into another region or renamed in the reorg? If so, should last week be restated to the new structure?' They also ask whether the EMEA extract is missing and whether reported_totals.csv needs re-issuing. The final reply says 'I haven't estimated any EMEA figures.' It does not invent this-week EMEA numbers. It quotes the raw reported totals (10,890 to 7,600) and says the drop is 'about 30%', but only to warn that the comparison 'is not like-for-like' and 'is therefore not a real decline'. That flags a broken comparison; it does not present a company WoW total to leadership. No review.md was written."
+    }
+  ],
+  "summary": {
+    "passed": 3,
+    "failed": 0,
+    "total": 3,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Skill": 1,
+      "Bash": 2,
+      "Write": 1
+    },
+    "total_tool_calls": 4,
+    "total_steps": 6,
+    "files_created": [
+      "questions.md"
+    ],
+    "errors_encountered": 0,
+    "output_chars": 1307,
+    "transcript_chars": 7145,
+    "skills_invoked": [
+      "weekly-metrics-review"
+    ],
+    "skill_used": true
+  },
+  "claims": [
+    {
+      "claim": "This week's reported totals (7,600 / 319,100 / 27,200) equal the sum of NA, APAC and LATAM exactly",
+      "type": "factual",
+      "verified": true,
+      "evidence": "4390+2210+1000=7600; 192800+90400+35900=319100; 15660+8000+3540=27200"
+    },
+    {
+      "claim": "Last week's reported totals include EMEA",
+      "type": "factual",
+      "verified": true,
+      "evidence": "4210+3580+2140+960=10890 matches the reported last_week orders, and revenue and customers also match with EMEA included"
+    },
+    {
+      "claim": "Apparent drop of about 30% in orders",
+      "type": "factual",
+      "verified": true,
+      "evidence": "7600/10890 - 1 = -30.2%"
+    },
+    {
+      "claim": "Used the skill's reconcile script, which returned status 'stop' with a missing_region issue for EMEA",
+      "type": "process",
+      "verified": true,
+      "evidence": "The transcript shows reconcile.py output with \"status\": \"stop\" and the issue {type: missing_region, region: EMEA}"
+    },
+    {
+      "claim": "I haven't estimated any EMEA figures",
+      "type": "process",
+      "verified": true,
+      "evidence": "The only EMEA numbers in the outputs are last week's actuals from last_week.csv"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+        "reason": "The 'no WoW company total' part is ambiguous. This run quoted the ~30% drop, but only as a caveat. A stricter grader could fail that, and a looser one could pass a reply that leads with the drop. Spell out that quoting the totals to explain why they can't be compared is fine, and presenting them as a headline WoW change is not."
+      },
+      {
+        "reason": "The assertion bundles three behaviours: asking about the reorg, not estimating EMEA, and not giving a company WoW. Splitting them into separate assertions would show which one failed. A deterministic check for estimated EMEA this-week numbers would also help, since the reply should contain none."
+      }
+    ],
+    "overall": "The eval targets the right behaviour, and this run clearly passes it. The compound wording of the assertion is the main weakness."
+  }
+}

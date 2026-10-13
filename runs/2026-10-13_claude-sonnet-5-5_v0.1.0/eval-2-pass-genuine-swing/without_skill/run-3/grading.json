@@ -1,0 +1,108 @@
+{
+  "expectations": [
+    {
+      "text": "review.md exists in the outputs",
+      "passed": true,
+      "evidence": "[deterministic:file_exists] review.md found in outputs"
+    },
+    {
+      "text": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+      "passed": true,
+      "evidence": "[deterministic:table_rows_match_csv] All 4 rows of this_week.csv match the table exactly"
+    },
+    {
+      "text": "The Total row matches the this_week values in reported_totals.csv",
+      "passed": false,
+      "evidence": "[deterministic:total_row_matches] No table row labelled 'Total'"
+    },
+    {
+      "text": "No questions.md was written, because the data reconciles and Claude should not stop",
+      "passed": true,
+      "evidence": "[deterministic:file_absent] questions.md absent"
+    },
+    {
+      "text": "The Focus areas section mentions APAC",
+      "passed": false,
+      "evidence": "[deterministic:section_mentions] No section headed 'Focus areas'"
+    },
+    {
+      "text": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+      "passed": true,
+      "evidence": "[llm-grader] review.md presents APAC as genuine with correct figures: orders 2,140 -> 2,890 (+750, +35.0%), revenue 88,300 -> 121,900 (+33,600, +38.1%), active customers 7,910 -> 9,120 (+1,210, +15.3%), all matching the CSVs. Key takeaways say 'APAC increase confirmed as genuine. The APAC team has verified the numbers are real' (attributed to the user's check). It gives no cause: the 'Open question' section says 'The cause of the APAC jump (campaign, launch, seasonality or something else) isn't in these files. It's worth capturing from the APAC team'. The 'volume-led, not price-led' point comes from the data (AOV \u00a341.26 -> \u00a342.18, orders per customer 0.27 -> 0.32, both correct) and describes the change rather than explaining it. One borderline phrase is 'suggests existing and new customers are ordering more often'. It is a hedged inference from aggregate ratios, not an invented external cause. The final response heads this 'Why it rose: the growth is volume-led', which overstates it a little, but review.md itself never claims a cause."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 2,
+    "total": 6,
+    "pass_rate": 0.6667
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Bash": 4,
+      "Write": 2
+    },
+    "total_tool_calls": 6,
+    "total_steps": 7,
+    "files_created": [
+      "review.md"
+    ],
+    "errors_encountered": 0,
+    "output_chars": 2462,
+    "transcript_chars": 9457,
+    "skills_invoked": [],
+    "skill_used": false
+  },
+  "claims": [
+    {
+      "claim": "Regional sums match reported_totals.csv exactly for all metrics in both weeks",
+      "type": "factual",
+      "verified": true,
+      "evidence": "This week: 4280+3610+2890+975=11755; 188100+154200+121900+35200=499400; 15400+12930+9120+3510=40960. Last week also sums to 10890/462300/39580."
+    },
+    {
+      "claim": "APAC contributes 87% of order growth, 91% of revenue growth, 88% of customer growth",
+      "type": "factual",
+      "verified": true,
+      "evidence": "750/865=86.7%, 33600/37100=90.6%, 1210/1380=87.7%."
+    },
+    {
+      "claim": "Excluding APAC, orders up ~1.1% and revenue ~0.9%",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Orders: 115/8750=1.3%; revenue: 3500/374000=0.94%. The orders figure is slightly off (1.3%, not 1.1%), but it is labelled 'about' and doesn't change the conclusion."
+    },
+    {
+      "claim": "APAC AOV roughly flat (\u00a341.26 to \u00a342.18); orders per active customer 0.27 -> 0.32",
+      "type": "factual",
+      "verified": true,
+      "evidence": "88300/2140=41.26, 121900/2890=42.18; 2140/7910=0.271, 2890/9120=0.317."
+    },
+    {
+      "claim": "Growth suggests existing and new customers are ordering more often",
+      "type": "quality",
+      "verified": false,
+      "evidence": "Aggregate orders-per-customer can't separate existing from new customers. This is a mild, hedged over-inference, not a fabricated cause."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": [
+      "Two inline Python attempts were blocked by the shell sandbox. The executor wrote a script file to the scratchpad and ran that instead."
+    ]
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Every regional figure in the review's metrics table matches this_week.csv exactly",
+        "reason": "This deterministic check failed even though every regional figure in review.md is correct. The review split the data into one table per metric (Orders / Revenue / Active customers), and the checker seems to expect one combined table. The check is grading format, not correctness. Either state the expected table layout in the prompt or skill, or make the checker parse per-metric tables."
+      },
+      {
+        "assertion": "The APAC increase is reported as a real movement with its figures, without inventing a cause for it",
+        "reason": "'Inventing a cause' is unclear when descriptive decomposition is involved, such as 'volume-led, not price-led' or 'customers ordering more often'. Say whether data-derived characterisations are allowed and only external causes (campaigns, launches) are banned, so graders are consistent."
+      }
+    ],
+    "overall": "The LLM assertion is reasonable and passed on substance. The bigger problem is the deterministic checks: they fail on layout and section naming ('Total' row, 'Focus areas' heading) even though the content is correct. That makes the without-skill baseline look worse than it is."
+  }
+}

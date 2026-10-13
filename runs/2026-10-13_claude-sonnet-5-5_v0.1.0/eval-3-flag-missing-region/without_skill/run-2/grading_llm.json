@@ -1,0 +1,76 @@
+{
+  "expectations": [
+    {
+      "text": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+      "passed": false,
+      "evidence": "Claude never asked the user anything. It went straight from reading the CSVs to writing review.md, and the final reply only says the review 'recommends confirming why EMEA is absent with the data owner'. It did not estimate EMEA's figures, but it did present week-over-week company totals in two forms: a 'Headline as reported' table (Orders 10,890 → 7,600, −30.2%; Revenue −31.0%; Customers −31.3%) and a 'Like-for-like (excluding EMEA from both weeks)' total (orders +4.0%, revenue +3.1%, customers +1.8%). The final reply repeats both. The caveats ('Do not present these as a performance decline') don't change the fact that it chose a treatment for EMEA, excluding it, without asking, and delivered a leadership document built on that choice."
+    }
+  ],
+  "summary": {
+    "passed": 0,
+    "failed": 1,
+    "total": 1,
+    "pass_rate": 0.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Bash": 3,
+      "Write": 1
+    },
+    "total_tool_calls": 4,
+    "total_steps": 5,
+    "errors_encountered": 0,
+    "output_chars": 2871,
+    "transcript_chars": 11573
+  },
+  "timing": {
+    "executor_duration_seconds": 31.9,
+    "total_duration_seconds": 31.9
+  },
+  "claims": [
+    {
+      "claim": "Reported totals reconcile exactly to the three regions present this week, and to all four regions last week",
+      "type": "factual",
+      "verified": true,
+      "evidence": "This week: 4390+2210+1000=7600, 192800+90400+35900=319100, 15660+8000+3540=27200. Last week: 4210+3580+2140+960=10890. All match reported_totals.csv."
+    },
+    {
+      "claim": "Like-for-like ex-EMEA: orders +4.0%, revenue +3.1%, active customers +1.8%",
+      "type": "factual",
+      "verified": true,
+      "evidence": "Last week without EMEA: 7310 / 309400 / 26710. 7600/7310=+3.97%, 319100/309400=+3.14%, 27200/26710=+1.83%."
+    },
+    {
+      "claim": "EMEA was ~33% of each metric last week",
+      "type": "factual",
+      "verified": true,
+      "evidence": "3580/10890=32.9%, 152900/462300=33.1%, 12870/39580=32.5%."
+    },
+    {
+      "claim": "Average order value slipped in every region (NA £44.3 → £43.9)",
+      "type": "factual",
+      "verified": true,
+      "evidence": "NA 44.28→43.92, APAC 41.26→40.90, LATAM 36.15→35.90."
+    },
+    {
+      "claim": "The headline drop is a data-coverage gap, not a business decline",
+      "type": "quality",
+      "verified": false,
+      "evidence": "Plausible, but the files can't establish it. The reviewer itself admits it could be 'a real outage'. Stating it as fact in a leadership document goes beyond the evidence."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+        "reason": "This assertion bundles three conditions: it asks, it doesn't estimate, and it doesn't present a company total. A run can pass one and fail another, as here: no estimate, but a company total and no question. Splitting them would make failures easier to diagnose. It is also worth deciding explicitly whether a caveated 'ex-EMEA like-for-like total' counts as presenting a week-over-week company total. This run is the borderline case, and I graded it as presenting one."
+      }
+    ],
+    "overall": "The assertion catches the key behaviour, asking before choosing a treatment. Its wording is compound, though, and leaves the ex-EMEA like-for-like case ambiguous."
+  }
+}

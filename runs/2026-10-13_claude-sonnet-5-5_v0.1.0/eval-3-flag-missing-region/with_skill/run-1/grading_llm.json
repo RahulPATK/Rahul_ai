@@ -1,0 +1,79 @@
+{
+  "expectations": [
+    {
+      "text": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+      "passed": true,
+      "evidence": "questions.md and the final reply ask directly: 'Was EMEA merged into another region in the reorg, or is this week's EMEA extract missing?', plus whether this week's reported totals are incomplete and, if EMEA was merged, for last week restated on the new structure. Both say 'I haven't estimated or carried forward any EMEA figure.' No EMEA figure for this week appears anywhere. The only company-level WoW numbers (-30.2% orders, -31.0% revenue, -31.3% active customers) appear as a counterfactual warning ('Total orders would otherwise show -30.2% ... which is the loss of a whole region rather than a real movement'). They explain why the review is blocked and are not given as a finding, so this fits the intent of 'not presenting a WoW company total'. No review.md was produced."
+    }
+  ],
+  "summary": {
+    "passed": 1,
+    "failed": 0,
+    "total": 1,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {
+      "Skill": 1,
+      "Bash": 3,
+      "Write": 1
+    },
+    "total_tool_calls": 5,
+    "total_steps": 7,
+    "errors_encountered": 0,
+    "output_chars": 1403,
+    "transcript_chars": 7591
+  },
+  "timing": {},
+  "claims": [
+    {
+      "claim": "last_week.csv has EMEA: orders 3,580, revenue 152,900 GBP, active customers 12,870",
+      "type": "factual",
+      "verified": true,
+      "evidence": "last_week.csv row: 'EMEA,3580,152900,12870'"
+    },
+    {
+      "claim": "this_week.csv has only North America, APAC and LATAM",
+      "type": "factual",
+      "verified": true,
+      "evidence": "this_week.csv contains exactly those three region rows"
+    },
+    {
+      "claim": "This week's reported totals (7,600 / 319,100 / 27,200) equal the sum of the three present regions",
+      "type": "factual",
+      "verified": true,
+      "evidence": "4390+2210+1000=7600; 192800+90400+35900=319100; 15660+8000+3540=27200. The reconcile.py output agrees."
+    },
+    {
+      "claim": "Company totals would show -30.2% orders, -31.0% revenue, -31.3% active customers WoW",
+      "type": "factual",
+      "verified": true,
+      "evidence": "7600/10890-1=-30.2%; 319100/462300-1=-31.0%; 27200/39580-1=-31.3%"
+    },
+    {
+      "claim": "Claude did not estimate or carry forward any EMEA figure",
+      "type": "process",
+      "verified": true,
+      "evidence": "None of the outputs contain an EMEA value for this week"
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": [
+      "The executor's first Bash call (a for-loop cat) was blocked. It ran reconcile.py and then a plain cat instead, with no effect on the outcome."
+    ]
+  },
+  "eval_feedback": {
+    "suggestions": [
+      {
+        "assertion": "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total",
+        "reason": "'Presenting a week-over-week company total' is ambiguous. This run computed the -30% company WoW figures but only as a counterfactual warning. A stricter grader could fail that. Spell out whether WoW totals mentioned as a caveat are allowed, so the verdict doesn't depend on the grader's reading."
+      },
+      {
+        "reason": "The assertion bundles three behaviours: asking about EMEA, not estimating EMEA, and not presenting a company WoW. An output could do one well and miss another. Splitting them would make failures easier to diagnose."
+      }
+    ],
+    "overall": "The assertion is meaningful and this run clearly meets its intent. Its wording about WoW totals should be tightened."
+  }
+}
