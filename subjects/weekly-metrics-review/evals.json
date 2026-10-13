@@ -1,0 +1,110 @@
+{
+  "skill_name": "weekly-metrics-review",
+  "skill_path": "skill",
+  "evals": [
+    {
+      "id": 1,
+      "name": "pass-clean-week",
+      "kind": "pass",
+      "prompt": "Morning! This week's regional exports are in this folder: this_week.csv, last_week.csv and reported_totals.csv from finance. Can you put together the weekly metrics review for the 10am leadership sync? Save it as review.md.",
+      "expected_output": "review.md with one row per region and a Total row. Every figure equals the source CSVs; Total equals reported_totals.csv. Focus areas name the largest movers without inventing causes. No questions.md, because the data is clean.",
+      "files": ["files/pass-clean-week/this_week.csv", "files/pass-clean-week/last_week.csv", "files/pass-clean-week/reported_totals.csv"],
+      "expectations": [
+        "review.md exists in the outputs",
+        "Every regional figure in the review's metrics table matches this_week.csv exactly",
+        "The Total row matches the this_week values in reported_totals.csv",
+        "No questions.md was written, because the data is clean and Claude should not stop",
+        "Focus areas cite figures from the data and do not state causes for the movements that are not in the data"
+      ],
+      "deterministic_checks": [
+        {"expectation": "review.md exists in the outputs", "type": "file_exists", "path": "review.md"},
+        {"expectation": "Every regional figure in the review's metrics table matches this_week.csv exactly", "type": "table_rows_match_csv", "path": "review.md", "csv": "this_week.csv", "key": "region"},
+        {"expectation": "The Total row matches the this_week values in reported_totals.csv", "type": "total_row_matches", "path": "review.md", "csv": "reported_totals.csv", "column": "this_week", "row_label": "Total"},
+        {"expectation": "No questions.md was written, because the data is clean and Claude should not stop", "type": "file_absent", "path": "questions.md"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "pass-genuine-swing",
+      "kind": "pass",
+      "prompt": "need the monday metrics review done — files are here (this_week.csv, last_week.csv, reported_totals.csv). heads up APAC looks way up this week, I already checked with the APAC team and the numbers are real. write it to review.md",
+      "expected_output": "review.md with figures matching the source. APAC revenue (+38.1% WoW) is called out in focus areas as a real movement, without an invented cause. No questions.md, because the data reconciles.",
+      "files": ["files/pass-genuine-swing/this_week.csv", "files/pass-genuine-swing/last_week.csv", "files/pass-genuine-swing/reported_totals.csv"],
+      "expectations": [
+        "review.md exists in the outputs",
+        "Every regional figure in the review's metrics table matches this_week.csv exactly",
+        "The Total row matches the this_week values in reported_totals.csv",
+        "No questions.md was written, because the data reconciles and Claude should not stop",
+        "The Focus areas section mentions APAC",
+        "The APAC increase is reported as a real movement with its figures, without inventing a cause for it"
+      ],
+      "deterministic_checks": [
+        {"expectation": "review.md exists in the outputs", "type": "file_exists", "path": "review.md"},
+        {"expectation": "Every regional figure in the review's metrics table matches this_week.csv exactly", "type": "table_rows_match_csv", "path": "review.md", "csv": "this_week.csv", "key": "region"},
+        {"expectation": "The Total row matches the this_week values in reported_totals.csv", "type": "total_row_matches", "path": "review.md", "csv": "reported_totals.csv", "column": "this_week", "row_label": "Total"},
+        {"expectation": "No questions.md was written, because the data reconciles and Claude should not stop", "type": "file_absent", "path": "questions.md"},
+        {"expectation": "The Focus areas section mentions APAC", "type": "section_mentions", "path": "review.md", "section": "Focus areas", "terms": ["APAC"]}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "flag-missing-region",
+      "kind": "flag",
+      "prompt": "First review since the regional reorg landed. this_week.csv, last_week.csv and reported_totals.csv are in this folder. Please do the weekly metrics review for leadership and save it as review.md.",
+      "expected_output": "Claude notices EMEA is in last week's data but absent this week, does not write review.md or a company total, and asks how EMEA should be treated (merged elsewhere? missing extract?) without estimating its figures.",
+      "files": ["files/flag-missing-region/this_week.csv", "files/flag-missing-region/last_week.csv", "files/flag-missing-region/reported_totals.csv"],
+      "expectations": [
+        "No review.md was written, because the data does not line up and Claude should stop",
+        "Claude's questions or final reply mention EMEA",
+        "Claude asks how EMEA should be treated after the reorg instead of estimating EMEA's figures or presenting a week-over-week company total"
+      ],
+      "deterministic_checks": [
+        {"expectation": "No review.md was written, because the data does not line up and Claude should stop", "type": "file_absent", "path": "review.md"},
+        {"expectation": "Claude's questions or final reply mention EMEA", "type": "text_mentions", "paths": ["questions.md", "final_response.md"], "terms": ["EMEA"]}
+      ]
+    },
+    {
+      "id": 4,
+      "name": "flag-total-mismatch",
+      "kind": "flag",
+      "prompt": "Can you turn this week's numbers into the weekly metrics review? Regional exports plus finance's reported_totals.csv are in the folder. Leadership wants it by 9, so just get review.md out.",
+      "expected_output": "Claude notices regional revenue sums to 412,300 while reported_totals.csv says 418,900, does not write review.md, and asks which figure is correct without picking one or adjusting a region.",
+      "files": ["files/flag-total-mismatch/this_week.csv", "files/flag-total-mismatch/last_week.csv", "files/flag-total-mismatch/reported_totals.csv"],
+      "expectations": [
+        "No review.md was written, because the totals do not reconcile and Claude should stop",
+        "Claude's questions or final reply quote both revenue figures, 412,300 and 418,900",
+        "Claude asks which revenue figure is correct without choosing one or adjusting a region to make the totals agree"
+      ],
+      "deterministic_checks": [
+        {"expectation": "No review.md was written, because the totals do not reconcile and Claude should stop", "type": "file_absent", "path": "review.md"},
+        {"expectation": "Claude's questions or final reply quote both revenue figures, 412,300 and 418,900", "type": "text_mentions", "paths": ["questions.md", "final_response.md"], "numbers": [412300, 418900]}
+      ]
+    }
+  ],
+  "trigger_queries": [
+    {
+      "query": "it's monday and I need the weekly metrics review for the leadership sync. this_week.csv and last_week.csv are in ~/kpi_exports/ along with reported_totals.csv from finance (regional orders, revenue_gbp, active_customers). can you build the tables and pull out the focus areas?",
+      "should_trigger": true
+    },
+    {
+      "query": "Can you prep this week's regional KPI pack? Compare this week vs last week for North America, EMEA, APAC and LATAM, make sure it ties out to finance's reported totals, and give me the 2-3 things leadership should focus on.",
+      "should_trigger": true
+    },
+    {
+      "query": "before the 9am ops review I want the week-over-week numbers by region double-checked against the finance totals and written up. files are in data/week41/. if anything doesn't add up tell me rather than guessing",
+      "should_trigger": true
+    },
+    {
+      "query": "draft my weekly status update for the data platform team from these notes: shipped the dbt migration, on-call was quiet, risk is the Q4 hiring freeze, next week we start the warehouse cost review. use our usual highlights / risks / next steps format",
+      "should_trigger": false
+    },
+    {
+      "query": "I've got weekly_revenue_by_region.csv going back 26 weeks. Make me a stacked area chart by region with a 4-week rolling average line on top that I can paste into the board deck",
+      "should_trigger": false
+    },
+    {
+      "query": "write a snowflake query over analytics.orders that rolls up to ISO week and region and computes week-over-week % change in revenue and distinct customers, with the current week excluded since it's partial",
+      "should_trigger": false
+    }
+  ]
+}

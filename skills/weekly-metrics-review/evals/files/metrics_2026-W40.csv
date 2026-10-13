@@ -1,7 +1,0 @@
-metric,direction,target,last_week,this_week
-weekly_active_users,higher,48000,51800,50900
-signup_conversion_pct,higher,3.0,3.38,3.33
-p95_latency_ms,lower,450,395,612
-error_rate_pct,lower,0.50,0.30,1.12
-support_tickets,lower,900,760,1185
-net_revenue_usd,higher,120000,132400,127900

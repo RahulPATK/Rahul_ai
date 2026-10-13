@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Wrapper the runner puts first on PATH, so every model call it makes — its own and
+# those made by skill-creator's scripts, which call `claude` from PATH — stays contained:
+#   --no-session-persistence   no session logs written under ~/.claude
+#   --setting-sources project,local   user-level settings and hooks don't leak into runs
+#   --settings                 excludes this repo's CLAUDE.md files from the run's context
+set -euo pipefail
+: "${REAL_CLAUDE:?REAL_CLAUDE is set by runner/run.py}"
+exec "$REAL_CLAUDE" "$@" \
+  --no-session-persistence \
+  --setting-sources project,local \
+  --settings "${EVAL_CLAUDE_SETTINGS:-{\}}"

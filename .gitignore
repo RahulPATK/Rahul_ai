@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+# per-run scratch copies of the inputs; outputs/ and transcripts are kept
+runs/**/work/
+runs/_offline/
